@@ -50,9 +50,11 @@ docker compose up -d
 
 | 中间件 | 地址 | 凭证 |
 |--------|------|------|
-| MySQL | `127.0.0.1:3307` | `root` / `learn123` |
-| Redis | `127.0.0.1:6379` | 密码 `learn123` |
+| MySQL | `127.0.0.1:3306` | `root` / `123123` |
+| Redis | `127.0.0.1:6379` | 无密码 |
 | Nacos | `127.0.0.1:8848` | 无鉴权 |
+
+> 若本机 3306 已被占用，可在 `docker-compose.yml` 中改端口映射，并同步设置环境变量 `MYSQL_PORT`。
 
 ### 2. 初始化数据库
 
@@ -121,6 +123,7 @@ AuthFilter → TokenFeignClient → learn-auth（Redis 校验 Token）
 | 变量 | 默认值 |
 |------|--------|
 | `NACOS_HOST` | `127.0.0.1` |
-| `MYSQL_PORT` | `3307` |
-| `MYSQL_PASSWORD` | `learn123` |
-| `REDIS_PASSWORD` | `learn123` |
+| `MYSQL_PORT` | `3306` |
+| `MYSQL_PASSWORD` | `123123` |
+| `REDIS_HOST` | `127.0.0.1` |
+| `REDIS_PORT` | `6379` |
