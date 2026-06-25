@@ -4,7 +4,7 @@ spring:
     redis:
       host: ${REDIS_HOST:127.0.0.1}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:learn123}
+      # 本地 Redis 无密码；若后续设置了密码，可增加：password: ${REDIS_PASSWORD}
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
