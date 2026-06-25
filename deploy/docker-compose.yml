@@ -1,0 +1,59 @@
+services:
+  learn-mysql:
+    image: mysql:8.0
+    container_name: learn-mall-mysql
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: learn123
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-plearn123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  learn-redis:
+    image: redis:7
+    container_name: learn-mall-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass learn123
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "learn123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  learn-nacos:
+    image: nacos/nacos-server:v3.1.1
+    container_name: learn-mall-nacos
+    restart: unless-stopped
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+      - "8080:8080"
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: learn-mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: learn_nacos
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: learn123
+      NACOS_AUTH_ENABLE: "false"
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+      TZ: Asia/Shanghai
+    depends_on:
+      learn-mysql:
+        condition: service_healthy

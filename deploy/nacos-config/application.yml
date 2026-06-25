@@ -1,0 +1,10 @@
+# Phase 0 共享配置（后续 Phase 1+ 导入 Nacos 使用）
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:learn123}
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8

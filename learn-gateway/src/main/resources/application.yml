@@ -1,0 +1,41 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: learn-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allow-credentials: true
+                allowed-headers: "*"
+                allowed-origin-patterns: "*"
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                max-age: 3600
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
