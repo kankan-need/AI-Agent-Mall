@@ -90,4 +90,11 @@ public class ServerResponseEntity<T> implements Serializable {
         entity.setData(data);
         return entity;
     }
+
+    public static <T> ServerResponseEntity<T> transform(ServerResponseEntity<?> oldEntity) {
+        ServerResponseEntity<T> entity = new ServerResponseEntity<>();
+        entity.setMsg(oldEntity.getMsg());
+        entity.setCode(oldEntity.getCode());
+        return entity;
+    }
 }

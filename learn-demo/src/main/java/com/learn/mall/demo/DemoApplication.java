@@ -1,11 +1,13 @@
 package com.learn.mall.demo;
 
 import com.learn.mall.common.config.EnableLearnMallCommon;
+import com.learn.mall.common.security.config.EnableLearnMallSecurity;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableLearnMallCommon
-@SpringBootApplication
+@EnableLearnMallSecurity
+@SpringBootApplication(scanBasePackages = "com.learn.mall")
 public class DemoApplication {
 
     public static void main(String[] args) {

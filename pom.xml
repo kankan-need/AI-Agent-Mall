@@ -13,7 +13,10 @@
 
     <modules>
         <module>learn-common</module>
+        <module>learn-api</module>
         <module>learn-gateway</module>
+        <module>learn-auth</module>
+        <module>learn-rbac</module>
         <module>learn-demo</module>
     </modules>
 
@@ -27,6 +30,7 @@
         <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
         <nacos.version>3.1.1</nacos.version>
         <hutool.version>5.8.29</hutool.version>
+        <mybatis-spring-boot-starter.version>4.0.1</mybatis-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -66,6 +70,36 @@
                 <groupId>com.learn.mall</groupId>
                 <artifactId>learn-common-core</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-common-cache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-common-database</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-api-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-api-rbac</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring-boot-starter.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

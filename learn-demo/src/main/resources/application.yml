@@ -11,6 +11,11 @@ spring:
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
 
+feign:
+  inside:
+    key: learn-mall
+    secret: learn-mall-secret
+
 management:
   endpoints:
     web:

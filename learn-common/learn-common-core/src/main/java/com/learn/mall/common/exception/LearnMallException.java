@@ -33,6 +33,12 @@ public class LearnMallException extends RuntimeException {
         this.object = object;
     }
 
+    public LearnMallException(String msg, Throwable cause) {
+        super(msg, cause);
+        this.object = null;
+        this.responseEnum = null;
+    }
+
     public Object getObject() {
         return object;
     }
