@@ -14,7 +14,7 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import tools.jackson.databind.ObjectMapper;
+import com.learn.mall.common.util.Json;
 
 import java.time.Duration;
 
@@ -35,8 +35,8 @@ public class RedisCacheConfig {
     }
 
     @Bean
-    public RedisSerializer<Object> redisSerializer(ObjectMapper objectMapper) {
-        return new GenericJacksonJsonRedisSerializer(objectMapper);
+    public RedisSerializer<Object> redisSerializer() {
+        return new GenericJacksonJsonRedisSerializer(Json.getRedisObjectMapper());
     }
 
     @Bean

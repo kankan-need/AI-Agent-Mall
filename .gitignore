@@ -5,3 +5,4 @@ target/
 *.class
 *.log
 deploy/mysql/data/
+/front-end/admin/node_modules/
