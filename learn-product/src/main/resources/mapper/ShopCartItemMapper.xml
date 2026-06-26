@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.product.mapper.ShopCartItemMapper">
+
+    <select id="listByUserId" resultType="com.learn.mall.product.vo.ShopCartItemVO">
+        select sci.cart_item_id, sci.shop_id, sci.spu_id, sci.sku_id, sci.count,
+               sci.price_fee, sci.is_checked, s.name as spu_name, s.main_img_url
+        from shop_cart_item sci
+                 inner join spu s on sci.spu_id = s.spu_id
+        where sci.user_id = #{userId} and s.status != -1
+        order by sci.cart_item_id desc
+    </select>
+
+    <select id="getByUserAndSku" resultType="com.learn.mall.product.model.ShopCartItem">
+        select cart_item_id, shop_id, spu_id, sku_id, user_id, count, price_fee, is_checked
+        from shop_cart_item
+        where user_id = #{userId} and sku_id = #{skuId}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="cartItemId">
+        insert into shop_cart_item (shop_id, spu_id, sku_id, user_id, count, price_fee, is_checked)
+        values (#{shopId}, #{spuId}, #{skuId}, #{userId}, #{count}, #{priceFee}, #{isChecked})
+    </insert>
+
+    <update id="update">
+        update shop_cart_item
+        set count = #{count}, price_fee = #{priceFee}, is_checked = #{isChecked}
+        where cart_item_id = #{cartItemId} and user_id = #{userId}
+    </update>
+
+    <delete id="deleteByIds">
+        delete from shop_cart_item
+        where user_id = #{userId}
+          and cart_item_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAll">
+        delete from shop_cart_item where user_id = #{userId}
+    </delete>
+
+    <update id="updateChecked">
+        update shop_cart_item set is_checked = #{isChecked}
+        where user_id = #{userId} and cart_item_id = #{cartItemId}
+    </update>
+
+    <select id="countByUserId" resultType="int">
+        select coalesce(sum(count), 0) from shop_cart_item where user_id = #{userId}
+    </select>
+</mapper>

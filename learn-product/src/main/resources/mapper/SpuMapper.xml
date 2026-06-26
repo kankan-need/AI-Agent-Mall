@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.product.mapper.SpuMapper">
+
+    <sql id="searchWhere">
+        where shop_id = #{shopId} and status != -1
+        <if test="search.name != null and search.name != ''">
+            and name like concat('%', #{search.name}, '%')
+        </if>
+        <if test="search.categoryId != null">
+            and category_id = #{search.categoryId}
+        </if>
+        <if test="search.status != null">
+            and status = #{search.status}
+        </if>
+    </sql>
+
+    <select id="getById" resultType="com.learn.mall.product.model.Spu">
+        select spu_id, category_id, shop_id, name, selling_point, main_img_url, img_urls,
+               price_fee, market_price_fee, status, stock, sale_num, seq
+        from spu
+        where spu_id = #{spuId} and status != -1
+    </select>
+
+    <select id="page" resultType="com.learn.mall.product.model.Spu">
+        select spu_id, category_id, shop_id, name, selling_point, main_img_url, img_urls,
+               price_fee, market_price_fee, status, stock, sale_num, seq
+        from spu
+        <include refid="searchWhere"/>
+        order by seq asc, spu_id desc
+        limit #{begin}, #{size}
+    </select>
+
+    <select id="count" resultType="long">
+        select count(1) from spu
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="listAppPage" resultType="com.learn.mall.product.model.Spu">
+        select spu_id, category_id, shop_id, name, selling_point, main_img_url, img_urls,
+               price_fee, market_price_fee, status, stock, sale_num, seq
+        from spu
+        where shop_id = #{shopId} and status = 1
+        <if test="categoryId != null and categoryId > 0">
+            and (category_id = #{categoryId}
+                 or category_id in (
+                     select category_id from category
+                     where parent_id = #{categoryId} and status != -1
+                 ))
+        </if>
+        order by seq asc, spu_id desc
+        limit #{begin}, #{size}
+    </select>
+
+    <select id="countAppPage" resultType="long">
+        select count(1) from spu
+        where shop_id = #{shopId} and status = 1
+        <if test="categoryId != null and categoryId > 0">
+            and (category_id = #{categoryId}
+                 or category_id in (
+                     select category_id from category
+                     where parent_id = #{categoryId} and status != -1
+                 ))
+        </if>
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="spuId">
+        insert into spu (category_id, shop_id, name, selling_point, main_img_url, img_urls,
+                         price_fee, market_price_fee, status, stock, sale_num, seq)
+        values (#{categoryId}, #{shopId}, #{name}, #{sellingPoint}, #{mainImgUrl}, #{imgUrls},
+                #{priceFee}, #{marketPriceFee}, #{status}, #{stock}, #{saleNum}, #{seq})
+    </insert>
+
+    <update id="update">
+        update spu
+        set category_id = #{categoryId},
+            name = #{name},
+            selling_point = #{sellingPoint},
+            main_img_url = #{mainImgUrl},
+            img_urls = #{imgUrls},
+            price_fee = #{priceFee},
+            market_price_fee = #{marketPriceFee},
+            status = #{status},
+            stock = #{stock},
+            seq = #{seq}
+        where spu_id = #{spuId}
+    </update>
+
+    <update id="updateStatus">
+        update spu set status = #{status} where spu_id = #{spuId}
+    </update>
+
+    <select id="countByCategoryId" resultType="int">
+        select count(1) from spu where category_id = #{categoryId} and status != -1
+    </select>
+</mapper>

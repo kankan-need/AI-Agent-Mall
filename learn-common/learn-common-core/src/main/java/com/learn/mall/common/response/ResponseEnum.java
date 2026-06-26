@@ -10,7 +10,8 @@ public enum ResponseEnum {
     METHOD_ARGUMENT_NOT_VALID("A00002", ""),
     HTTP_MESSAGE_NOT_READABLE("A00003", "请求参数格式有误"),
     UNAUTHORIZED("A00004", "Unauthorized"),
-    EXCEPTION("A00005", "服务器出了点小差");
+    EXCEPTION("A00005", "服务器出了点小差"),
+    SPU_NOT_EXIST("A04004", "商品不存在或已下架");
 
     private final String code;
     private final String msg;

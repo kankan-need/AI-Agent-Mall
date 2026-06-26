@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.product.mapper.SkuMapper">
+
+    <select id="getById" resultType="com.learn.mall.product.model.Sku">
+        select sku_id, spu_id, price_fee, stock, status from sku where sku_id = #{skuId}
+    </select>
+
+    <select id="getBySpuId" resultType="com.learn.mall.product.model.Sku">
+        select sku_id, spu_id, price_fee, stock, status from sku where spu_id = #{spuId}
+    </select>
+
+    <select id="listBySpuId" resultType="com.learn.mall.product.model.Sku">
+        select sku_id, spu_id, price_fee, stock, status from sku where spu_id = #{spuId}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="skuId">
+        insert into sku (spu_id, price_fee, stock, status)
+        values (#{spuId}, #{priceFee}, #{stock}, #{status})
+    </insert>
+
+    <update id="update">
+        update sku set price_fee = #{priceFee}, stock = #{stock}, status = #{status}
+        where sku_id = #{skuId}
+    </update>
+</mapper>

@@ -6,3 +6,4 @@ target/
 *.log
 deploy/mysql/data/
 /front-end/admin/node_modules/
+/front-end/mall-h5/node_modules/

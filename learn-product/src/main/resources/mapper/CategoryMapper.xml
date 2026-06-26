@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.product.mapper.CategoryMapper">
+
+    <select id="getById" resultType="com.learn.mall.product.model.Category">
+        select category_id, shop_id, parent_id, name, path, status, icon, img_url, level, seq
+        from category
+        where category_id = #{categoryId} and status != -1
+    </select>
+
+    <select id="listByShopId" resultType="com.learn.mall.product.model.Category">
+        select category_id, shop_id, parent_id, name, path, status, icon, img_url, level, seq
+        from category
+        where shop_id = #{shopId} and status != -1
+        order by seq asc, category_id asc
+    </select>
+
+    <select id="listByShopIdAndParentId" resultType="com.learn.mall.product.model.Category">
+        select category_id, shop_id, parent_id, name, path, status, icon, img_url, level, seq
+        from category
+        where shop_id = #{shopId} and parent_id = #{parentId} and status != -1
+        order by seq asc, category_id asc
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into category (shop_id, parent_id, name, path, status, icon, img_url, level, seq)
+        values (#{shopId}, #{parentId}, #{name}, #{path}, #{status}, #{icon}, #{imgUrl}, #{level}, #{seq})
+    </insert>
+
+    <update id="update">
+        update category
+        set name = #{name},
+            status = #{status},
+            icon = #{icon},
+            img_url = #{imgUrl},
+            seq = #{seq},
+            path = #{path},
+            level = #{level}
+        where category_id = #{categoryId}
+    </update>
+
+    <update id="deleteById">
+        update category set status = -1 where category_id = #{categoryId}
+    </update>
+
+    <select id="countChildren" resultType="int">
+        select count(1) from category where parent_id = #{categoryId} and status != -1
+    </select>
+</mapper>

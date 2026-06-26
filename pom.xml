@@ -18,6 +18,7 @@
         <module>learn-auth</module>
         <module>learn-rbac</module>
         <module>learn-demo</module>
+        <module>learn-product</module>
     </modules>
 
     <properties>
