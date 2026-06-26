@@ -5,6 +5,7 @@ import com.learn.mall.common.security.adapter.AuthConfigAdapter;
 import com.learn.mall.common.security.adapter.DefaultAuthConfigAdapter;
 import com.learn.mall.common.security.filter.AuthFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ public class AuthConfig {
 
     @Bean
     @Lazy
+    @ConditionalOnProperty(name = "learn.mall.security.filter.enabled", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<AuthFilter> filterRegistration(AuthConfigAdapter authConfigAdapter, AuthFilter authFilter) {
         FilterRegistrationBean<AuthFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(authFilter);

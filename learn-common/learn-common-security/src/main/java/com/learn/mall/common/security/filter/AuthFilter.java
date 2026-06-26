@@ -40,6 +40,8 @@ public class AuthFilter implements Filter {
     private TokenFeignClient tokenFeignClient;
     @Autowired
     private PermissionFeignClient permissionFeignClient;
+    @Autowired(required = false)
+    private com.learn.mall.common.security.permission.PermissionCheckService permissionCheckService;
     @Autowired
     private FeignInsideAuthConfig feignInsideAuthConfig;
 
@@ -107,12 +109,21 @@ public class AuthFilter implements Filter {
                 && !Objects.equals(SysTypeEnum.MULTISHOP.value(), userInfoInToken.getSysType())) {
             return true;
         }
+        Integer httpMethod = HttpMethodEnum.valueOfMethod(method).value();
+        if (permissionCheckService != null) {
+            return permissionCheckService.checkPermission(
+                    userInfoInToken.getUserId(),
+                    userInfoInToken.getSysType(),
+                    uri,
+                    userInfoInToken.getIsAdmin(),
+                    httpMethod);
+        }
         ServerResponseEntity<Boolean> response = permissionFeignClient.checkPermission(
                 userInfoInToken.getUserId(),
                 userInfoInToken.getSysType(),
                 uri,
                 userInfoInToken.getIsAdmin(),
-                HttpMethodEnum.valueOfMethod(method).value());
+                httpMethod);
         return response.isSuccess() && Boolean.TRUE.equals(response.getData());
     }
 }

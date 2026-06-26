@@ -2,6 +2,8 @@ server:
   port: 8000
 
 spring:
+  config:
+    import: optional:classpath:application-learn-mall-defaults.yml
   application:
     name: learn-gateway
   cloud:
@@ -10,6 +12,7 @@ spring:
         server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
+        ip: 127.0.0.1
     gateway:
       server:
         webflux:
@@ -30,6 +33,12 @@ spring:
                   - DELETE
                   - OPTIONS
                 max-age: 3600
+
+learn:
+  mall:
+    nacos:
+      force-local-ip: true
+      discovery-ip: 127.0.0.1
 
 management:
   endpoints:

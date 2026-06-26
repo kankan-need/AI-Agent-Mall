@@ -1,13 +1,13 @@
 package com.learn.mall.auth.controller;
 
 import com.learn.mall.api.auth.bo.UserInfoInTokenBO;
+import com.learn.mall.api.auth.constant.SysTypeEnum;
 import com.learn.mall.api.auth.vo.TokenInfoVO;
 import com.learn.mall.api.rbac.dto.ClearUserPermissionsCacheDTO;
 import com.learn.mall.api.rbac.feign.PermissionFeignClient;
 import com.learn.mall.auth.dto.AuthenticationDTO;
 import com.learn.mall.auth.manager.TokenStore;
 import com.learn.mall.auth.service.AuthAccountService;
-import com.learn.mall.common.response.ResponseEnum;
 import com.learn.mall.common.response.ServerResponseEntity;
 import com.learn.mall.common.security.AuthUserContext;
 import jakarta.validation.Valid;
@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 @RestController
 public class LoginController {
@@ -36,26 +38,24 @@ public class LoginController {
         if (!userInfoResponse.isSuccess()) {
             return ServerResponseEntity.transform(userInfoResponse);
         }
-
-        UserInfoInTokenBO data = userInfoResponse.getData();
-        ClearUserPermissionsCacheDTO clearDto = new ClearUserPermissionsCacheDTO();
-        clearDto.setSysType(data.getSysType());
-        clearDto.setUserId(data.getUserId());
-        ServerResponseEntity<Void> clearResponse = permissionFeignClient.clearUserPermissionsCache(clearDto);
-        if (!clearResponse.isSuccess()) {
-            return ServerResponseEntity.fail(ResponseEnum.UNAUTHORIZED);
-        }
-        return ServerResponseEntity.success(tokenStore.storeAndGetVo(data));
+        return ServerResponseEntity.success(tokenStore.storeAndGetVo(userInfoResponse.getData()));
     }
 
     @PostMapping("/login_out")
     public ServerResponseEntity<Void> loginOut() {
         UserInfoInTokenBO userInfoInToken = AuthUserContext.get();
-        ClearUserPermissionsCacheDTO clearDto = new ClearUserPermissionsCacheDTO();
-        clearDto.setSysType(userInfoInToken.getSysType());
-        clearDto.setUserId(userInfoInToken.getUserId());
-        permissionFeignClient.clearUserPermissionsCache(clearDto);
+        if (needClearPermissionsCache(userInfoInToken.getSysType())) {
+            ClearUserPermissionsCacheDTO clearDto = new ClearUserPermissionsCacheDTO();
+            clearDto.setSysType(userInfoInToken.getSysType());
+            clearDto.setUserId(userInfoInToken.getUserId());
+            permissionFeignClient.clearUserPermissionsCache(clearDto);
+        }
         tokenStore.deleteAllToken(userInfoInToken.getSysType().toString(), userInfoInToken.getUid());
         return ServerResponseEntity.success();
+    }
+
+    private boolean needClearPermissionsCache(Integer sysType) {
+        return Objects.equals(SysTypeEnum.MULTISHOP.value(), sysType)
+                || Objects.equals(SysTypeEnum.PLATFORM.value(), sysType);
     }
 }

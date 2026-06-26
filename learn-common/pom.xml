@@ -14,6 +14,7 @@
 
     <modules>
         <module>learn-common-core</module>
+        <module>learn-common-nacos</module>
         <module>learn-common-cache</module>
         <module>learn-common-database</module>
         <module>learn-common-security</module>

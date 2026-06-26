@@ -23,6 +23,10 @@
             <artifactId>learn-common-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.learn.mall</groupId>
+            <artifactId>learn-common-nacos</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>

@@ -11,6 +11,24 @@ export default defineConfig({
   },
   server: {
     port: 9527,
-    host: true
+    host: true,
+    proxy: {
+      '/learn-auth': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      },
+      '/learn-rbac': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      },
+      '/learn-product': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      },
+      '/learn-demo': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      }
+    }
   }
 })

@@ -2,6 +2,8 @@ server:
   port: 9101
 
 spring:
+  config:
+    import: optional:classpath:application-learn-mall-defaults.yml
   application:
     name: learn-auth
   datasource:
@@ -19,6 +21,16 @@ spring:
         server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
+        ip: 127.0.0.1
+
+learn:
+  mall:
+    nacos:
+      force-local-ip: true
+      discovery-ip: 127.0.0.1
+    security:
+      filter:
+        enabled: false
 
 feign:
   inside:

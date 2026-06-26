@@ -10,7 +10,7 @@ import java.util.List;
 public class DefaultAuthConfigAdapter implements AuthConfigAdapter {
 
     private static final String FEIGN_INSIDER_URI = FeignInsideAuthConfig.FEIGN_INSIDE_URL_PREFIX + "/insider/**";
-    private static final String EXTERNAL_URI = "/**/ua/**";
+    private static final String EXTERNAL_URI = "/ua/**";
     private static final String ACTUATOR_URI = "/actuator/**";
 
     @Override

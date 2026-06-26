@@ -89,6 +89,11 @@
             </dependency>
             <dependency>
                 <groupId>com.learn.mall</groupId>
+                <artifactId>learn-common-nacos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
                 <artifactId>learn-api-auth</artifactId>
                 <version>${project.version}</version>
             </dependency>

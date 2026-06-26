@@ -1,0 +1,17 @@
+# 各微服务通用：Redis / Feign 超时（避免中间件卡死拖垮 Tomcat 线程）
+spring:
+  data:
+    redis:
+      timeout: 3s
+      connect-timeout: 3s
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 3000
+            readTimeout: 5000
+          learn-auth:
+            url: http://127.0.0.1:9101
+          learn-rbac:
+            url: http://127.0.0.1:9102

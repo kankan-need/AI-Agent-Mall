@@ -157,3 +157,10 @@ learn-product
 | `MYSQL_PASSWORD` | `123123` |
 | `REDIS_HOST` | `127.0.0.1` |
 | `REDIS_PORT` | `6379` |
+| `NACOS_DISCOVERY_IP` | `127.0.0.1`（已由 `learn-common-nacos` 自动强制，一般无需再设） |
+
+> **Nacos 注册 IP 仍是 10.x？**  
+> 1. 先 `mvn clean install` 重新编译（确保引入 `learn-common-nacos`）  
+> 2. **停止**所有 learn-* 服务后重新启动（不要热部署）  
+> 3. 在 Nacos 控制台「服务管理 → 服务列表」中，对 `learn-rbac` 等点「详情」，**下线/删除** 旧的 `10.100.x` 实例  
+> 4. 确认新实例 IP 为 `127.0.0.1`
