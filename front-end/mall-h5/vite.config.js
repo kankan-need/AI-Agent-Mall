@@ -24,6 +24,10 @@ export default defineConfig({
       '/learn-rbac': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true
+      },
+      '/learn-user': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
       }
     }
   }

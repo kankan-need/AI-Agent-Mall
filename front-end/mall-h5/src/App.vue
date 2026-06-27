@@ -6,7 +6,9 @@
       <router-link to="/cart" :class="{ active: route.path === '/cart' }">
         购物车{{ cartCount > 0 ? `(${cartCount})` : '' }}
       </router-link>
-      <router-link to="/login" :class="{ active: route.path === '/login' }">我的</router-link>
+      <router-link to="/my" :class="{ active: route.path.startsWith('/my') || route.path.startsWith('/profile') || route.path.startsWith('/address') || route.path === '/login' || route.path === '/register' }">
+        我的
+      </router-link>
     </nav>
   </div>
 </template>
@@ -20,7 +22,7 @@ import { getCartCount } from '@/api/cart'
 const route = useRoute()
 const cartCount = ref(0)
 
-const showTabBar = computed(() => !['/detail'].includes(route.path))
+const showTabBar = computed(() => !['/detail', '/profile/edit', '/address/edit', '/register'].includes(route.path))
 
 async function refreshCartCount() {
   if (!getToken()) {

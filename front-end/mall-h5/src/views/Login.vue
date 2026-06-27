@@ -11,7 +11,7 @@
         {{ loading ? '登录中...' : '登录' }}
       </button>
       <p v-if="token" class="success">已登录，Token 已保存</p>
-      <button v-if="token" class="logout" @click="handleLogout">退出登录</button>
+      <button class="link-btn" @click="router.push('/register')">没有账号？去注册</button>
     </div>
   </div>
 </template>
@@ -37,7 +37,7 @@ async function handleLogin() {
     const data = await login(form.value)
     setToken(data.accessToken)
     token.value = data.accessToken
-    router.push('/')
+    router.push('/my')
   } catch (e) {
     alert(e.message || '登录失败')
   } finally {
@@ -78,6 +78,13 @@ input {
 .btn-primary {
   width: 100%;
   margin-top: 20px;
+}
+.link-btn {
+  width: 100%;
+  margin-top: 12px;
+  border: none;
+  background: transparent;
+  color: #1989fa;
 }
 .success {
   color: #07c160;

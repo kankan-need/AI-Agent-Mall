@@ -19,6 +19,7 @@
         <module>learn-rbac</module>
         <module>learn-demo</module>
         <module>learn-product</module>
+        <module>learn-user</module>
     </modules>
 
     <properties>

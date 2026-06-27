@@ -15,3 +15,5 @@ spring:
             url: http://127.0.0.1:9101
           learn-rbac:
             url: http://127.0.0.1:9102
+          learn-user:
+            url: http://127.0.0.1:9115
