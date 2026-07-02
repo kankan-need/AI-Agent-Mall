@@ -30,7 +30,9 @@ const showTabBar = computed(() => ![
   '/register',
   '/order/confirm',
   '/order/pay',
-  '/order/detail'
+  '/order/detail',
+  '/sign-in',
+  '/coupon-center'
 ].includes(route.path))
 
 async function refreshCartCount() {

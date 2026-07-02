@@ -13,6 +13,17 @@
       <button class="search-btn" @click="handleSearch">搜索</button>
     </div>
 
+    <div class="shortcuts card">
+      <button class="shortcut" @click="goSignIn">
+        <span class="icon sign">签</span>
+        <span class="label">每日签到</span>
+      </button>
+      <button class="shortcut" @click="goCouponCenter">
+        <span class="icon coupon">券</span>
+        <span class="label">领券中心</span>
+      </button>
+    </div>
+
     <div v-if="searching" class="search-tip">搜索「{{ keyword }}」的结果</div>
 
     <div class="goods-list">
@@ -34,6 +45,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { pageSpu } from '@/api/product'
+import { getToken } from '@/utils/auth'
 import { formatPrice } from '@/utils/price'
 
 const router = useRouter()
@@ -69,6 +81,22 @@ function clearSearch() {
 
 function goDetail(spuId) {
   router.push({ path: '/detail', query: { spuId } })
+}
+
+function goSignIn() {
+  if (!getToken()) {
+    router.push('/login')
+    return
+  }
+  router.push('/sign-in')
+}
+
+function goCouponCenter() {
+  if (!getToken()) {
+    router.push('/login')
+    return
+  }
+  router.push('/coupon-center')
 }
 
 onMounted(loadGoods)
@@ -109,6 +137,43 @@ onMounted(loadGoods)
   border-radius: 14px;
   padding: 6px 14px;
   font-size: 13px;
+}
+.shortcuts {
+  display: flex;
+  gap: 12px;
+  margin: 12px;
+  padding: 14px 16px;
+}
+.shortcut {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+.icon.sign {
+  background: linear-gradient(135deg, #ff976a, #ee0a24);
+}
+.icon.coupon {
+  background: linear-gradient(135deg, #7232dd, #1989fa);
+}
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #323233;
 }
 .search-tip {
   padding: 0 12px 8px;

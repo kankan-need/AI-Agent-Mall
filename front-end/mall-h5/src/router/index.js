@@ -13,6 +13,8 @@ import OrderConfirm from '@/views/OrderConfirm.vue'
 import OrderPay from '@/views/OrderPay.vue'
 import OrderList from '@/views/OrderList.vue'
 import OrderDetail from '@/views/OrderDetail.vue'
+import SignIn from '@/views/SignIn.vue'
+import CouponCenter from '@/views/CouponCenter.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -30,7 +32,9 @@ const router = createRouter({
     { path: '/order/confirm', component: OrderConfirm },
     { path: '/order/pay', component: OrderPay },
     { path: '/order/list', component: OrderList },
-    { path: '/order/detail', component: OrderDetail }
+    { path: '/order/detail', component: OrderDetail },
+    { path: '/sign-in', component: SignIn },
+    { path: '/coupon-center', component: CouponCenter }
   ]
 })
 
