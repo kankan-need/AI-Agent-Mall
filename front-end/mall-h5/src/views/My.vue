@@ -16,6 +16,10 @@
       </div>
 
       <div class="menu card">
+        <div class="menu-item" @click="router.push('/favorites')">
+          <span>我的收藏</span>
+          <span class="arrow">›</span>
+        </div>
         <div class="menu-item" @click="router.push('/address')">
           <span>收货地址</span>
           <span class="arrow">›</span>

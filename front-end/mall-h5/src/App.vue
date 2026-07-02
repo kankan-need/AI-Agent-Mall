@@ -7,7 +7,7 @@
       <router-link to="/cart" :class="{ active: route.path === '/cart' }">
         购物车{{ cartCount > 0 ? `(${cartCount})` : '' }}
       </router-link>
-      <router-link to="/my" :class="{ active: route.path.startsWith('/my') || route.path.startsWith('/profile') || route.path.startsWith('/address') || route.path === '/login' || route.path === '/register' }">
+      <router-link to="/my" :class="{ active: route.path.startsWith('/my') || route.path.startsWith('/profile') || route.path.startsWith('/address') || route.path.startsWith('/favorites') || route.path === '/login' || route.path === '/register' }">
         我的
       </router-link>
     </nav>
@@ -32,7 +32,8 @@ const showTabBar = computed(() => ![
   '/order/pay',
   '/order/detail',
   '/sign-in',
-  '/coupon-center'
+  '/coupon-center',
+  '/favorites'
 ].includes(route.path))
 
 async function refreshCartCount() {
