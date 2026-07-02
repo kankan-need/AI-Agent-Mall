@@ -5,9 +5,12 @@ import { filterAsyncRoutes, treeDataTranslate } from '@/utils'
 
 const modules = import.meta.glob('../views/**/*.vue')
 
-function loadView(component) {
+function loadView(component, parentId) {
   if (component === 'Layout') {
-    return () => import('@/layout/index.vue')
+    if (!parentId || parentId === 0) {
+      return () => import('@/layout/index.vue')
+    }
+    return () => import('@/layout/ParentView.vue')
   }
   const path = `../views/${component}.vue`
   return modules[path]
@@ -27,7 +30,7 @@ export const usePermissionStore = defineStore('permission', {
       }
       const asyncRoutes = menus.map(item => ({
         ...item,
-        component: loadView(item.component)
+        component: loadView(item.component, item.parentId)
       }))
       const treeRoutes = treeDataTranslate(asyncRoutes)
       this.addRoutes = treeRoutes
