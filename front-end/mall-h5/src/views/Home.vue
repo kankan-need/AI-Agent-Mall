@@ -2,16 +2,18 @@
   <div class="page home">
     <header class="banner">Learn Mall H5</header>
 
-    <div class="categories">
-      <button
-        v-for="cat in categories"
-        :key="cat.categoryId"
-        :class="{ active: activeCategoryId === cat.categoryId }"
-        @click="selectCategory(cat.categoryId)"
-      >
-        {{ cat.name }}
-      </button>
+    <div class="search-bar card">
+      <input
+        v-model="keyword"
+        type="search"
+        placeholder="搜索商品名称"
+        @keyup.enter="handleSearch"
+      />
+      <button v-if="keyword" class="clear" @click="clearSearch">清除</button>
+      <button class="search-btn" @click="handleSearch">搜索</button>
     </div>
+
+    <div v-if="searching" class="search-tip">搜索「{{ keyword }}」的结果</div>
 
     <div class="goods-list">
       <div v-for="item in list" :key="item.spuId" class="goods-item card" @click="goDetail(item.spuId)">
@@ -24,40 +26,44 @@
     </div>
 
     <div v-if="loading" class="loading">加载中...</div>
-    <div v-else-if="!list.length" class="empty">暂无商品</div>
+    <div v-else-if="!list.length" class="empty">{{ searching ? '未找到相关商品' : '暂无商品' }}</div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { listCategories, pageSpu } from '@/api/product'
+import { pageSpu } from '@/api/product'
 import { formatPrice } from '@/utils/price'
 
 const router = useRouter()
-const categories = ref([])
-const activeCategoryId = ref(0)
+const keyword = ref('')
+const searching = ref(false)
 const list = ref([])
 const loading = ref(false)
-
-async function loadCategories() {
-  const top = await listCategories(0)
-  categories.value = [{ categoryId: 0, name: '全部' }, ...top]
-}
 
 async function loadGoods() {
   loading.value = true
   try {
-    const categoryId = activeCategoryId.value || undefined
-    const data = await pageSpu({ pageNum: 1, pageSize: 20, categoryId })
+    const params = { pageNum: 1, pageSize: 20 }
+    if (searching.value && keyword.value.trim()) {
+      params.name = keyword.value.trim()
+    }
+    const data = await pageSpu(params)
     list.value = data.list || []
   } finally {
     loading.value = false
   }
 }
 
-function selectCategory(categoryId) {
-  activeCategoryId.value = categoryId
+function handleSearch() {
+  searching.value = !!keyword.value.trim()
+  loadGoods()
+}
+
+function clearSearch() {
+  keyword.value = ''
+  searching.value = false
   loadGoods()
 }
 
@@ -65,10 +71,7 @@ function goDetail(spuId) {
   router.push({ path: '/detail', query: { spuId } })
 }
 
-onMounted(async () => {
-  await loadCategories()
-  await loadGoods()
-})
+onMounted(loadGoods)
 </script>
 
 <style scoped>
@@ -79,29 +82,44 @@ onMounted(async () => {
   font-size: 20px;
   font-weight: 600;
 }
-.categories {
+.search-bar {
   display: flex;
+  align-items: center;
   gap: 8px;
-  overflow-x: auto;
-  padding: 12px;
-  background: #fff;
+  margin: 12px;
+  padding: 8px 12px;
 }
-.categories button {
-  border: 1px solid #ebedf0;
-  background: #fff;
-  border-radius: 16px;
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+.clear {
+  border: none;
+  background: transparent;
+  color: #969799;
+  font-size: 13px;
+}
+.search-btn {
+  border: none;
+  background: #1989fa;
+  color: #fff;
+  border-radius: 14px;
   padding: 6px 14px;
-  white-space: nowrap;
+  font-size: 13px;
 }
-.categories button.active {
-  color: #1989fa;
-  border-color: #1989fa;
+.search-tip {
+  padding: 0 12px 8px;
+  color: #646566;
+  font-size: 13px;
 }
 .goods-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  padding: 12px;
+  padding: 0 12px 12px;
 }
 .goods-item img {
   width: 100%;

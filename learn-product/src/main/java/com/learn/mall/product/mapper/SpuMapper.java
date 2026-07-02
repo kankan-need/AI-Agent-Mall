@@ -16,9 +16,10 @@ public interface SpuMapper {
     long count(@Param("shopId") Long shopId, @Param("search") SpuPageSearchDTO search);
 
     List<Spu> listAppPage(@Param("shopId") Long shopId, @Param("categoryId") Long categoryId,
-                          @Param("begin") int begin, @Param("size") int size);
+                          @Param("name") String name, @Param("begin") int begin, @Param("size") int size);
 
-    long countAppPage(@Param("shopId") Long shopId, @Param("categoryId") Long categoryId);
+    long countAppPage(@Param("shopId") Long shopId, @Param("categoryId") Long categoryId,
+                      @Param("name") String name);
 
     int save(Spu spu);
 

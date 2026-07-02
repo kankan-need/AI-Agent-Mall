@@ -3,6 +3,7 @@
     <router-view />
     <nav class="bottom-bar" v-if="showTabBar">
       <router-link to="/" :class="{ active: route.path === '/' }">首页</router-link>
+      <router-link to="/category" :class="{ active: route.path === '/category' }">分类</router-link>
       <router-link to="/cart" :class="{ active: route.path === '/cart' }">
         购物车{{ cartCount > 0 ? `(${cartCount})` : '' }}
       </router-link>

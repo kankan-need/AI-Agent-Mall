@@ -41,6 +41,9 @@
                price_fee, market_price_fee, status, stock, sale_num, seq
         from spu
         where shop_id = #{shopId} and status = 1
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name}, '%')
+        </if>
         <if test="categoryId != null and categoryId > 0">
             and (category_id = #{categoryId}
                  or category_id in (
@@ -55,6 +58,9 @@
     <select id="countAppPage" resultType="long">
         select count(1) from spu
         where shop_id = #{shopId} and status = 1
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name}, '%')
+        </if>
         <if test="categoryId != null and categoryId > 0">
             and (category_id = #{categoryId}
                  or category_id in (

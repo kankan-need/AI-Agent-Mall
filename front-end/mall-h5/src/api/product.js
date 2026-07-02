@@ -8,6 +8,14 @@ export function listCategories(parentId = 0) {
   })
 }
 
+export function listShopCategories(shopId = 1) {
+  return request({
+    url: '/learn-product/ua/category/shop_category_list',
+    method: 'get',
+    params: { shopId }
+  })
+}
+
 export function pageSpu(params) {
   return request({
     url: '/learn-product/ua/spu/page',

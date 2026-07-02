@@ -10,7 +10,7 @@ public interface SpuService {
 
     PageVO<SpuVO> page(PageDTO pageDTO, SpuPageSearchDTO searchDTO);
 
-    PageVO<SpuVO> appPage(PageDTO pageDTO, Long categoryId);
+    PageVO<SpuVO> appPage(PageDTO pageDTO, Long categoryId, String name);
 
     SpuVO getBySpuId(Long spuId);
 

@@ -25,7 +25,8 @@ public class AppSpuController {
 
     @GetMapping("/page")
     public ServerResponseEntity<PageVO<SpuVO>> page(PageDTO pageDTO,
-                                                    @RequestParam(value = "categoryId", required = false) Long categoryId) {
-        return ServerResponseEntity.success(spuService.appPage(pageDTO, categoryId));
+                                                    @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                                    @RequestParam(value = "name", required = false) String name) {
+        return ServerResponseEntity.success(spuService.appPage(pageDTO, categoryId, name));
     }
 }

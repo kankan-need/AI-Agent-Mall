@@ -46,10 +46,10 @@ public class SpuServiceImpl implements SpuService {
     }
 
     @Override
-    public PageVO<SpuVO> appPage(PageDTO pageDTO, Long categoryId) {
+    public PageVO<SpuVO> appPage(PageDTO pageDTO, Long categoryId, String name) {
         int size = pageDTO.getPageSize() == null ? 10 : pageDTO.getPageSize();
-        long total = spuMapper.countAppPage(ProductConstant.DEFAULT_SHOP_ID, categoryId);
-        List<Spu> spuList = spuMapper.listAppPage(ProductConstant.DEFAULT_SHOP_ID, categoryId,
+        long total = spuMapper.countAppPage(ProductConstant.DEFAULT_SHOP_ID, categoryId, name);
+        List<Spu> spuList = spuMapper.listAppPage(ProductConstant.DEFAULT_SHOP_ID, categoryId, name,
                 pageDTO.getBegin(), size);
         return buildPage(spuList, total, size);
     }
