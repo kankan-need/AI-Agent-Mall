@@ -1,22 +1,14 @@
 <template>
   <div class="app">
     <router-view />
-    <nav class="bottom-bar" v-if="showTabBar">
-      <router-link to="/" :class="{ active: route.path === '/' }">首页</router-link>
-      <router-link to="/category" :class="{ active: route.path === '/category' }">分类</router-link>
-      <router-link to="/cart" :class="{ active: route.path === '/cart' }">
-        购物车{{ cartCount > 0 ? `(${cartCount})` : '' }}
-      </router-link>
-      <router-link to="/my" :class="{ active: route.path.startsWith('/my') || route.path.startsWith('/profile') || route.path.startsWith('/address') || route.path.startsWith('/favorites') || route.path === '/login' || route.path === '/register' }">
-        我的
-      </router-link>
-    </nav>
+    <TabBar v-if="showTabBar" :cart-count="cartCount" />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import TabBar from '@/components/TabBar.vue'
 import { getToken } from '@/utils/auth'
 import { getCartCount } from '@/api/cart'
 
