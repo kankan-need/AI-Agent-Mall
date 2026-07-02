@@ -58,12 +58,15 @@
 
       <button class="logout" @click="handleLogout">退出登录</button>
     </template>
+
+    <GuessYouLike />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import GuessYouLike from '@/components/GuessYouLike.vue'
 import { listOrders } from '@/api/order'
 import { getSimpleInfo } from '@/api/user'
 import { getToken, removeToken } from '@/utils/auth'
