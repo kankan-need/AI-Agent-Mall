@@ -3,9 +3,9 @@
     <div class="tabs">
       <button
         v-for="tab in tabs"
-        :key="String(tab.status)"
-        :class="{ active: activeStatus === tab.status }"
-        @click="changeTab(tab.status)"
+        :key="tab.key"
+        :class="{ active: activeTab === tab.key }"
+        @click="changeTab(tab.key)"
       >
         {{ tab.label }}
       </button>
@@ -16,7 +16,7 @@
       <div v-for="order in list" :key="order.orderId" class="item card" @click="goDetail(order)">
         <div class="head">
           <span>{{ order.shopName }}</span>
-          <span :class="statusClass(order.status)">{{ statusText(order.status) }}</span>
+          <span :class="statusClass(order.status)">{{ displayStatus(order) }}</span>
         </div>
         <div v-for="item in (order.orderItems || []).slice(0, 2)" :key="item.orderItemId" class="goods">
           <img :src="item.pic" alt="" />
@@ -38,29 +38,51 @@
         </div>
       </div>
     </div>
-    <div v-else class="empty card">暂无订单</div>
+    <div v-else class="empty card">{{ emptyText }}</div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { cancelOrder, listOrders } from '@/api/order'
 import { formatPrice } from '@/utils/price'
 
+const route = useRoute()
 const router = useRouter()
+
 const tabs = [
-  { label: '全部', status: null },
-  { label: '待付款', status: 1 },
-  { label: '已付款', status: 2 },
-  { label: '已关闭', status: 6 }
+  { label: '全部', key: 'all', status: null },
+  { label: '待付款', key: 'unpay', status: 1 },
+  { label: '待发货', key: 'unship', status: 2 },
+  { label: '待收货', key: 'receive', virtual: true },
+  { label: '退款/退货', key: 'refund', virtual: true }
 ]
-const activeStatus = ref(null)
+
+const activeTab = ref('all')
 const list = ref([])
 const loading = ref(false)
 
+const currentTab = computed(() => tabs.find(tab => tab.key === activeTab.value) || tabs[0])
+
+const emptyText = computed(() => {
+  if (activeTab.value === 'receive') {
+    return '暂无待收货订单（学习版暂未开通物流）'
+  }
+  if (activeTab.value === 'refund') {
+    return '暂无退款/退货订单（学习版暂未开通售后）'
+  }
+  const label = currentTab.value.label
+  return label === '全部' ? '暂无订单' : `暂无${label}订单`
+})
+
+function displayStatus(order) {
+  if (order.status === 2 && activeTab.value === 'unship') return '待发货'
+  return statusText(order.status)
+}
+
 function statusText(status) {
-  const map = { 1: '待付款', 2: '已付款', 5: '已完成', 6: '已关闭' }
+  const map = { 1: '待付款', 2: '待发货', 5: '已完成', 6: '已关闭' }
   return map[status] || '未知'
 }
 
@@ -70,12 +92,27 @@ function statusClass(status) {
   return 'muted'
 }
 
+function resolveTabFromQuery() {
+  const tab = route.query.tab
+  if (tab && tabs.some(item => item.key === tab)) {
+    activeTab.value = tab
+  } else {
+    activeTab.value = 'all'
+  }
+}
+
 async function loadList() {
+  const tab = currentTab.value
+  if (tab.virtual) {
+    list.value = []
+    return
+  }
+
   loading.value = true
   try {
     const params = { pageNum: 1, pageSize: 20 }
-    if (activeStatus.value != null) {
-      params.status = activeStatus.value
+    if (tab.status != null) {
+      params.status = tab.status
     }
     const data = await listOrders(params)
     list.value = data.list || []
@@ -84,8 +121,9 @@ async function loadList() {
   }
 }
 
-function changeTab(status) {
-  activeStatus.value = status
+function changeTab(key) {
+  activeTab.value = key
+  router.replace({ path: '/order/list', query: key === 'all' ? {} : { tab: key } })
   loadList()
 }
 
@@ -103,7 +141,15 @@ async function cancel(order) {
   await loadList()
 }
 
-onMounted(loadList)
+onMounted(() => {
+  resolveTabFromQuery()
+  loadList()
+})
+
+watch(() => route.query.tab, () => {
+  resolveTabFromQuery()
+  loadList()
+})
 </script>
 
 <style scoped>
@@ -114,13 +160,16 @@ onMounted(loadList)
   display: flex;
   background: #fff;
   border-bottom: 1px solid #ebedf0;
+  overflow-x: auto;
 }
 .tabs button {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 72px;
   border: none;
   background: transparent;
-  padding: 12px 0;
-  font-size: 14px;
+  padding: 12px 10px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 .tabs button.active {
   color: #1989fa;
@@ -194,5 +243,6 @@ onMounted(loadList)
   padding: 24px;
   text-align: center;
   color: #969799;
+  line-height: 1.6;
 }
 </style>
