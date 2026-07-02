@@ -12,6 +12,7 @@ public class ShopCartItemVO {
     private String spuName;
     private String mainImgUrl;
     private Long totalAmount;
+    private Long categoryId;
 
     public Long getCartItemId() {
         return cartItemId;
@@ -91,5 +92,13 @@ public class ShopCartItemVO {
 
     public void setTotalAmount(Long totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

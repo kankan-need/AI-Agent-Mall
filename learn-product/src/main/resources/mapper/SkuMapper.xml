@@ -23,4 +23,13 @@
         update sku set price_fee = #{priceFee}, stock = #{stock}, status = #{status}
         where sku_id = #{skuId}
     </update>
+
+    <update id="reduceStock">
+        update sku set stock = stock - #{count}
+        where sku_id = #{skuId} and stock >= #{count}
+    </update>
+
+    <update id="addStock">
+        update sku set stock = stock + #{count} where sku_id = #{skuId}
+    </update>
 </mapper>

@@ -16,4 +16,8 @@ public interface SkuMapper {
     int save(Sku sku);
 
     int update(Sku sku);
+
+    int reduceStock(@Param("skuId") Long skuId, @Param("count") Integer count);
+
+    int addStock(@Param("skuId") Long skuId, @Param("count") Integer count);
 }

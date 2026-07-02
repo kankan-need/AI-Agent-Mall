@@ -38,6 +38,10 @@
             <artifactId>learn-common-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.learn.mall</groupId>
+            <artifactId>learn-api-product</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>

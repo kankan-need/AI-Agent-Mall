@@ -93,4 +93,17 @@
     <select id="countByCategoryId" resultType="int">
         select count(1) from spu where category_id = #{categoryId} and status != -1
     </select>
+
+    <update id="reduceStock">
+        update spu set stock = stock - #{count}
+        where spu_id = #{spuId} and stock >= #{count}
+    </update>
+
+    <update id="addStock">
+        update spu set stock = stock + #{count} where spu_id = #{spuId}
+    </update>
+
+    <update id="addSaleNum">
+        update spu set sale_num = sale_num + #{count} where spu_id = #{spuId}
+    </update>
 </mapper>

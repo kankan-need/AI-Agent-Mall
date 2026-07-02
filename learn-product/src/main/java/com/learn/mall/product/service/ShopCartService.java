@@ -20,4 +20,6 @@ public interface ShopCartService {
     int prodCount(Long userId);
 
     List<ShopCartItemVO> getShopCartItems(Long userId);
+
+    List<ShopCartItemVO> listCheckedItems(Long userId);
 }

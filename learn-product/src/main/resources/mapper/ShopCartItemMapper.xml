@@ -4,10 +4,19 @@
 
     <select id="listByUserId" resultType="com.learn.mall.product.vo.ShopCartItemVO">
         select sci.cart_item_id, sci.shop_id, sci.spu_id, sci.sku_id, sci.count,
-               sci.price_fee, sci.is_checked, s.name as spu_name, s.main_img_url
+               sci.price_fee, sci.is_checked, s.name as spu_name, s.main_img_url, s.category_id
         from shop_cart_item sci
                  inner join spu s on sci.spu_id = s.spu_id
         where sci.user_id = #{userId} and s.status != -1
+        order by sci.cart_item_id desc
+    </select>
+
+    <select id="listCheckedByUserId" resultType="com.learn.mall.product.vo.ShopCartItemVO">
+        select sci.cart_item_id, sci.shop_id, sci.spu_id, sci.sku_id, sci.count,
+               sci.price_fee, sci.is_checked, s.name as spu_name, s.main_img_url, s.category_id
+        from shop_cart_item sci
+                 inner join spu s on sci.spu_id = s.spu_id
+        where sci.user_id = #{userId} and sci.is_checked = 1 and s.status = 1
         order by sci.cart_item_id desc
     </select>
 

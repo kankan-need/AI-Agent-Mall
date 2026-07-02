@@ -27,4 +27,10 @@ public interface SpuMapper {
     int updateStatus(@Param("spuId") Long spuId, @Param("status") Integer status);
 
     int countByCategoryId(@Param("categoryId") Long categoryId);
+
+    int reduceStock(@Param("spuId") Long spuId, @Param("count") Integer count);
+
+    int addStock(@Param("spuId") Long spuId, @Param("count") Integer count);
+
+    int addSaleNum(@Param("spuId") Long spuId, @Param("count") Integer count);
 }

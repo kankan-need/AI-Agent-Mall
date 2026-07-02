@@ -53,6 +53,11 @@ public class ShopCartServiceImpl implements ShopCartService {
     }
 
     @Override
+    public List<ShopCartItemVO> listCheckedItems(Long userId) {
+        return shopCartItemMapper.listCheckedByUserId(userId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void changeItem(Long userId, ChangeShopCartItemDTO dto) {
         Spu spu = spuMapper.getById(dto.getSpuId());

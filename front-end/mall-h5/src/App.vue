@@ -22,7 +22,15 @@ import { getCartCount } from '@/api/cart'
 const route = useRoute()
 const cartCount = ref(0)
 
-const showTabBar = computed(() => !['/detail', '/profile/edit', '/address/edit', '/register'].includes(route.path))
+const showTabBar = computed(() => ![
+  '/detail',
+  '/profile/edit',
+  '/address/edit',
+  '/register',
+  '/order/confirm',
+  '/order/pay',
+  '/order/detail'
+].includes(route.path))
 
 async function refreshCartCount() {
   if (!getToken()) {

@@ -15,5 +15,7 @@
     <modules>
         <module>learn-api-auth</module>
         <module>learn-api-rbac</module>
+        <module>learn-api-product</module>
+        <module>learn-api-user</module>
     </modules>
 </project>

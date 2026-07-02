@@ -28,6 +28,10 @@ export default defineConfig({
       '/learn-user': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true
+      },
+      '/learn-order': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
       }
     }
   }

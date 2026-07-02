@@ -10,6 +10,8 @@ public interface ShopCartItemMapper {
 
     List<ShopCartItemVO> listByUserId(@Param("userId") Long userId);
 
+    List<ShopCartItemVO> listCheckedByUserId(@Param("userId") Long userId);
+
     ShopCartItem getByUserAndSku(@Param("userId") Long userId, @Param("skuId") Long skuId);
 
     int save(ShopCartItem item);

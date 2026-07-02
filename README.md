@@ -10,7 +10,7 @@
 | 1 | 完成 | auth、rbac、common-security、admin 动态路由 |
 | 2 | 完成 | learn-product 商品/分类/购物车、admin 商品管理、H5 浏览 |
 | 3 | 完成 | learn-user 注册/资料/地址、H5 个人中心 |
-| 4 | 待做 | 订单与支付 |
+| 4 | 完成 | learn-order 下单/锁库存/模拟支付/定时取消、双端订单页 |
 
 ## 目录结构
 
@@ -23,6 +23,7 @@ mall4cloud-learn/
 ├── learn-rbac/            # :9102
 ├── learn-product/         # :9114
 ├── learn-user/            # :9115
+├── learn-order/           # :9116
 ├── learn-demo/            # :9100
 ├── front-end/admin/
 ├── front-end/mall-h5/
@@ -47,6 +48,7 @@ docker compose up -d
 db/phase1-auth-rbac.sql
 db/phase2-product.sql
 db/phase3-user.sql
+db/phase4-order.sql
 ```
 
 | 账号 | 密码 | 用途 |
@@ -64,10 +66,13 @@ mvn -pl learn-auth spring-boot:run
 mvn -pl learn-rbac spring-boot:run
 mvn -pl learn-product spring-boot:run
 mvn -pl learn-user spring-boot:run
+mvn -pl learn-order spring-boot:run
 mvn -pl learn-gateway spring-boot:run
 ```
 
-### 4. 启动 H5
+### 4. 启动前端
+
+**H5**
 
 ```powershell
 cd front-end/mall-h5
@@ -77,7 +82,70 @@ npm run dev
 
 访问 http://localhost:9528
 
-## Phase 3 验证
+**Admin**
+
+```powershell
+cd front-end/admin
+npm install
+npm run dev
+```
+
+访问 http://localhost:9527
+
+## Phase 4 验证
+
+### H5 下单流程
+
+1. 使用 `user1 / 123456` 登录
+2. 首页加购商品 → 购物车勾选 →「去结算」
+3. 选择收货地址 → 提交订单
+4. 支付页点击「模拟支付」→ 订单变为已付款
+5. 「我的」→「我的订单」查看列表/详情
+6. 待付款订单可取消；超时未付由定时任务自动关闭（默认 30 分钟）
+
+### Admin 订单管理
+
+1. 使用 `admin / 123456` 登录
+2. 左侧菜单「订单管理」→ 订单列表
+3. 按状态筛选，点击「详情」查看订单快照
+
+### curl 示例
+
+```powershell
+# 提交订单（需 Token，且购物车有勾选商品）
+curl -X POST http://127.0.0.1:8000/learn-order/a/order/submit ^
+  -H "Content-Type: application/json" ^
+  -H "Authorization: TOKEN" ^
+  -d "{\"addrId\":1}"
+
+# 模拟支付
+curl -X POST "http://127.0.0.1:8000/learn-order/a/order/pay?orderId=1" ^
+  -H "Authorization: TOKEN"
+
+# 管理端订单分页
+curl "http://127.0.0.1:8000/learn-order/admin/order/page?pageNum=1&pageSize=10" ^
+  -H "Authorization: ADMIN_TOKEN"
+```
+
+## 架构说明（Phase 4）
+
+```
+H5 → Gateway → learn-order（下单/支付/取消）
+              → learn-product（购物车、锁库存 Feign）
+              → learn-user（收货地址 Feign）
+
+learn-order
+  /a/order/submit      下单（锁库存 → 落单 → 删购物车）
+  /a/order/pay         模拟支付（写 pay_info、确认库存）
+  /a/order/cancel      用户取消（解锁库存）
+  /admin/order/**      管理端订单查询
+
+OrderCancelTask        每分钟扫描超时未支付订单并关闭
+```
+
+订单状态：`1` 待付款、`2` 已付款、`5` 完成、`6` 关闭。
+
+## Phase 3 验证（用户模块）
 
 ### 注册
 
@@ -89,33 +157,6 @@ npm run dev
 1. 查看头像昵称
 2. 编辑资料
 3. 收货地址列表 / 新增 / 编辑 / 删除
-
-### curl 示例
-
-```powershell
-# 注册（免登录）
-curl -X POST http://127.0.0.1:8000/learn-user/ua/user/register ^
-  -H "Content-Type: application/json" ^
-  -d "{\"userName\":\"test01\",\"password\":\"123456\",\"nickName\":\"测试用户\"}"
-
-# 地址列表（需 Token）
-curl http://127.0.0.1:8000/learn-user/a/user_addr/list -H "Authorization: TOKEN"
-```
-
-## 架构说明（Phase 3）
-
-```
-H5 → Gateway → learn-user（注册/资料/地址）
-              → learn-auth（登录、AccountFeign 写 auth_account）
-              → learn-product（商品/购物车）
-
-learn-user
-  /ua/user/register   注册并返回 Token
-  /a/user/**          用户资料（需登录）
-  /a/user_addr/**     收货地址 CRUD（需登录）
-```
-
-注册流程：`learn-user` 调 `AccountFeignClient.save` 写 `auth_account` → 插 `user` 表 → `storeTokenAndGetVo` 返回 Token。
 
 ## 环境变量
 

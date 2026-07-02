@@ -20,6 +20,7 @@
         <module>learn-demo</module>
         <module>learn-product</module>
         <module>learn-user</module>
+        <module>learn-order</module>
     </modules>
 
     <properties>
@@ -101,6 +102,16 @@
             <dependency>
                 <groupId>com.learn.mall</groupId>
                 <artifactId>learn-api-rbac</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-api-product</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.learn.mall</groupId>
+                <artifactId>learn-api-user</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

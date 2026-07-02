@@ -20,6 +20,10 @@
           <span>收货地址</span>
           <span class="arrow">›</span>
         </div>
+        <div class="menu-item" @click="router.push('/order/list')">
+          <span>我的订单</span>
+          <span class="arrow">›</span>
+        </div>
         <div class="menu-item" @click="router.push('/cart')">
           <span>我的购物车</span>
           <span class="arrow">›</span>

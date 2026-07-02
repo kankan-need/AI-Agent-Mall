@@ -17,3 +17,7 @@ spring:
             url: http://127.0.0.1:9102
           learn-user:
             url: http://127.0.0.1:9115
+          learn-order:
+            url: http://127.0.0.1:9116
+          learn-product:
+            url: http://127.0.0.1:9114

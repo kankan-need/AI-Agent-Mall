@@ -30,6 +30,7 @@
 
       <div class="footer" v-if="items.length">
         <div>合计：¥{{ formatPrice(totalMoney) }}</div>
+        <button class="btn-primary checkout" :disabled="!hasChecked" @click="goCheckout">去结算</button>
       </div>
     </template>
   </div>
@@ -46,6 +47,7 @@ const router = useRouter()
 const items = ref([])
 const totalMoney = ref(0)
 const loggedIn = computed(() => !!getToken())
+const hasChecked = computed(() => items.value.some(item => item.isChecked === 1))
 
 async function loadCart() {
   if (!getToken()) return
@@ -72,6 +74,14 @@ async function toggleCheck(item) {
   const isChecked = item.isChecked === 1 ? 0 : 1
   await checkCartItems([{ cartItemId: item.cartItemId, isChecked }])
   await loadCart()
+}
+
+function goCheckout() {
+  if (!hasChecked.value) {
+    alert('请先勾选要结算的商品')
+    return
+  }
+  router.push('/order/confirm')
 }
 
 onMounted(loadCart)
@@ -137,6 +147,16 @@ onMounted(loadCart)
   background: #fff;
   border-top: 1px solid #ebedf0;
   padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-weight: 600;
+}
+.checkout {
+  padding: 8px 18px;
+  font-size: 14px;
+}
+.checkout:disabled {
+  opacity: 0.5;
 }
 </style>
