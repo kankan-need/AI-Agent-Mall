@@ -13,6 +13,8 @@
       <button class="search-btn" @click="handleSearch">搜索</button>
     </div>
 
+    <BannerCarousel :banners="adBanners" />
+
     <div class="shortcuts card">
       <button class="shortcut" @click="goSignIn">
         <span class="icon sign">签</span>
@@ -44,6 +46,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import BannerCarousel from '@/components/BannerCarousel.vue'
 import { pageSpu } from '@/api/product'
 import { getToken } from '@/utils/auth'
 import { formatPrice } from '@/utils/price'
@@ -53,6 +56,34 @@ const keyword = ref('')
 const searching = ref(false)
 const list = ref([])
 const loading = ref(false)
+
+const adBanners = [
+  {
+    title: '春季焕新季',
+    desc: '精选好物限时优惠',
+    bg: 'linear-gradient(135deg, #667eea, #764ba2)',
+    link: '/category'
+  },
+  {
+    title: '新人领券',
+    desc: '最高立减 50 元',
+    bg: 'linear-gradient(135deg, #f093fb, #f5576c)',
+    link: '/coupon-center',
+    needLogin: true
+  },
+  {
+    imgUrl: 'https://img.yzcdn.cn/vant/apple-1.jpg',
+    title: '数码家电',
+    link: '/category'
+  },
+  {
+    title: '每日签到',
+    desc: '连签 7 天领大奖',
+    bg: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+    link: '/sign-in',
+    needLogin: true
+  }
+]
 
 async function loadGoods() {
   loading.value = true
