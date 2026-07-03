@@ -81,11 +81,11 @@ function formatBadge(count) {
   display: flex;
   align-items: stretch;
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(235, 237, 240, 0.9);
-  box-shadow: 0 -6px 24px rgba(25, 137, 250, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .tab-item {

@@ -3,12 +3,17 @@
     <header class="banner">Learn Mall H5</header>
 
     <div class="search-bar card">
-      <input
-        v-model="keyword"
-        type="search"
-        placeholder="搜索商品名称"
-        @keyup.enter="handleSearch"
-      />
+      <div class="search-field">
+        <input
+          v-model="keyword"
+          type="search"
+          placeholder=" "
+          @keyup.enter="handleSearch"
+        />
+        <transition name="hint-fade" mode="out-in">
+          <span v-if="!keyword" :key="searchPlaceholder" class="search-hint">{{ searchPlaceholder }}</span>
+        </transition>
+      </div>
       <button v-if="keyword" class="clear" @click="clearSearch">清除</button>
       <button class="search-btn" @click="handleSearch">搜索</button>
     </div>
@@ -44,7 +49,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BannerCarousel from '@/components/BannerCarousel.vue'
 import { pageSpu } from '@/api/product'
@@ -56,6 +61,9 @@ const keyword = ref('')
 const searching = ref(false)
 const list = ref([])
 const loading = ref(false)
+const placeholderPool = ref([])
+const searchPlaceholder = ref('搜索商品名称')
+let placeholderTimer = null
 
 const adBanners = [
   {
@@ -94,8 +102,41 @@ async function loadGoods() {
     }
     const data = await pageSpu(params)
     list.value = data.list || []
+    mergePlaceholderNames(list.value.map(item => item.name))
   } finally {
     loading.value = false
+  }
+}
+
+function mergePlaceholderNames(names) {
+  const valid = names.filter(Boolean)
+  if (!valid.length) return
+  placeholderPool.value = [...new Set([...placeholderPool.value, ...valid])]
+  if (searchPlaceholder.value === '搜索商品名称') {
+    pickRandomPlaceholder()
+  }
+}
+
+function pickRandomPlaceholder() {
+  const pool = placeholderPool.value
+  if (!pool.length) return
+  let next = pool[Math.floor(Math.random() * pool.length)]
+  if (pool.length > 1) {
+    const current = searchPlaceholder.value.replace(/^搜索\s*/, '')
+    while (next === current) {
+      next = pool[Math.floor(Math.random() * pool.length)]
+    }
+  }
+  searchPlaceholder.value = `搜索 ${next}`
+}
+
+async function loadPlaceholderPool() {
+  try {
+    const pageNum = Math.floor(Math.random() * 3) + 1
+    const data = await pageSpu({ pageNum, pageSize: 30 })
+    mergePlaceholderNames((data.list || []).map(item => item.name))
+  } catch {
+    // ignore
   }
 }
 
@@ -130,7 +171,15 @@ function goCouponCenter() {
   router.push('/coupon-center')
 }
 
-onMounted(loadGoods)
+onMounted(() => {
+  loadGoods()
+  loadPlaceholderPool()
+  placeholderTimer = setInterval(pickRandomPlaceholder, 3000)
+})
+
+onUnmounted(() => {
+  if (placeholderTimer) clearInterval(placeholderTimer)
+})
 </script>
 
 <style scoped>
@@ -148,12 +197,38 @@ onMounted(loadGoods)
   margin: 12px;
   padding: 8px 12px;
 }
-.search-bar input {
+.search-field {
+  position: relative;
   flex: 1;
+  min-width: 0;
+}
+.search-field input {
+  width: 100%;
   border: none;
   outline: none;
   font-size: 14px;
   background: transparent;
+}
+.search-hint {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 100%;
+  color: #c8c9cc;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.hint-fade-enter-active,
+.hint-fade-leave-active {
+  transition: opacity 0.35s ease;
+}
+.hint-fade-enter-from,
+.hint-fade-leave-to {
+  opacity: 0;
 }
 .clear {
   border: none;
