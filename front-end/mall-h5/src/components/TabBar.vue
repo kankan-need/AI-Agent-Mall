@@ -1,7 +1,7 @@
 <template>
   <nav class="tab-bar">
     <router-link
-      v-for="tab in tabs"
+      v-for="tab in leftTabs"
       :key="tab.path"
       :to="tab.path"
       class="tab-item"
@@ -11,11 +11,38 @@
         <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path v-if="tab.icon === 'home'" d="M3 10.2 12 4l9 6.2V19a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8.8Z" />
           <path
-            v-else-if="tab.icon === 'category'"
+            v-else
             d="M4.5 5.5h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Zm9 0h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1ZM4.5 14.5h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Zm9 0h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1Z"
           />
+        </svg>
+      </span>
+      <span class="tab-label">{{ tab.label }}</span>
+      <span v-if="isActive(tab)" class="tab-indicator" />
+    </router-link>
+
+    <router-link to="/agent" class="tab-item tab-agent" :class="{ active: isAgentActive }">
+      <span class="tab-agent-btn" :class="{ 'is-active': isAgentActive }">
+        <svg class="agent-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3a7 7 0 0 0-7 7v2.2l-1.4 2.8a1 1 0 0 0 .9 1.5h15a1 1 0 0 0 .9-1.5L19 12.2V10a7 7 0 0 0-7-7Z" />
+          <path d="M10 20.5a2 2 0 0 0 4 0" />
+          <circle cx="9" cy="11" r="1" fill="currentColor" stroke="none" />
+          <circle cx="15" cy="11" r="1" fill="currentColor" stroke="none" />
+        </svg>
+      </span>
+      <span class="tab-label agent-label">Agent</span>
+    </router-link>
+
+    <router-link
+      v-for="tab in rightTabs"
+      :key="tab.path"
+      :to="tab.path"
+      class="tab-item"
+      :class="{ active: isActive(tab) }"
+    >
+      <span class="tab-icon-wrap" :class="{ 'is-active': isActive(tab) }">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path
-            v-else-if="tab.icon === 'cart'"
+            v-if="tab.icon === 'cart'"
             d="M6.5 6h14l-1.8 9.2H8.3L6.5 6Zm0 0-1.2-2.5H3M9.5 20.2a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Zm8 0a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z"
           />
           <path
@@ -44,12 +71,17 @@ const props = defineProps({
 
 const route = useRoute()
 
-const tabs = computed(() => [
+const leftTabs = [
   { path: '/', label: '首页', icon: 'home' },
-  { path: '/category', label: '分类', icon: 'category' },
+  { path: '/category', label: '分类', icon: 'category' }
+]
+
+const rightTabs = computed(() => [
   { path: '/cart', label: '购物车', icon: 'cart', badge: props.cartCount },
   { path: '/my', label: '我的', icon: 'user' }
 ])
+
+const isAgentActive = computed(() => route.path === '/agent')
 
 function isActive(tab) {
   const path = route.path
@@ -79,8 +111,8 @@ function formatBadge(count) {
   bottom: 0;
   z-index: 100;
   display: flex;
-  align-items: stretch;
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  align-items: flex-end;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -93,7 +125,7 @@ function formatBadge(count) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 2px;
   padding: 4px 0;
   color: #969799;
@@ -101,7 +133,7 @@ function formatBadge(count) {
   -webkit-tap-highlight-color: transparent;
 }
 
-.tab-item:active {
+.tab-item:active:not(.tab-agent) {
   transform: scale(0.96);
 }
 
@@ -174,5 +206,53 @@ function formatBadge(count) {
   text-align: center;
   border: 1.5px solid #fff;
   box-shadow: 0 2px 6px rgba(238, 10, 36, 0.35);
+}
+
+.tab-agent {
+  position: relative;
+  top: -14px;
+  color: #667eea;
+}
+
+.tab-agent.active {
+  color: #667eea;
+}
+
+.tab-agent-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.45);
+  border: 3px solid #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tab-agent-btn.is-active {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.55);
+}
+
+.tab-agent:active .tab-agent-btn {
+  transform: scale(0.96);
+}
+
+.agent-icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.agent-label {
+  font-weight: 600;
+  color: #667eea;
 }
 </style>

@@ -16,12 +16,14 @@ import OrderDetail from '@/views/OrderDetail.vue'
 import SignIn from '@/views/SignIn.vue'
 import CouponCenter from '@/views/CouponCenter.vue'
 import Favorites from '@/views/Favorites.vue'
+import Agent from '@/views/Agent.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: Home },
     { path: '/category', component: Category },
+    { path: '/agent', component: Agent },
     { path: '/detail', component: Detail },
     { path: '/cart', component: Cart },
     { path: '/login', component: Login },
