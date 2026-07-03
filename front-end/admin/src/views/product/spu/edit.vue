@@ -7,11 +7,11 @@
       </div>
     </template>
 
-    <el-form :model="form" label-width="100px" class="form">
-      <el-form-item label="商品名称" required>
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="form">
+      <el-form-item label="商品名称" prop="name" required>
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="分类" required>
+      <el-form-item label="分类" prop="categoryId" required>
         <el-select v-model="form.categoryId" style="width: 100%">
           <el-option
             v-for="item in categories"
@@ -24,16 +24,23 @@
       <el-form-item label="卖点">
         <el-input v-model="form.sellingPoint" />
       </el-form-item>
-      <el-form-item label="主图URL">
+      <el-form-item label="主图URL" prop="mainImgUrl">
         <el-input v-model="form.mainImgUrl" placeholder="https://..." />
+        <el-image
+          v-if="form.mainImgUrl"
+          :src="form.mainImgUrl"
+          style="width: 120px; height: 120px; margin-top: 8px"
+          fit="cover"
+          :preview-src-list="[form.mainImgUrl]"
+        />
       </el-form-item>
-      <el-form-item label="售价(元)" required>
+      <el-form-item label="售价(元)" prop="priceFee" required>
         <el-input-number v-model="priceYuan" :min="0" :precision="2" :step="1" />
       </el-form-item>
       <el-form-item label="市场价(元)">
         <el-input-number v-model="marketPriceYuan" :min="0" :precision="2" :step="1" />
       </el-form-item>
-      <el-form-item label="库存" required>
+      <el-form-item label="库存" prop="stock" required>
         <el-input-number v-model="form.stock" :min="0" />
       </el-form-item>
       <el-form-item label="排序">
@@ -65,8 +72,26 @@ import { yuanToFee } from '@/utils/price'
 
 const route = useRoute()
 const router = useRouter()
+const formRef = ref(null)
 const saving = ref(false)
 const categories = ref([])
+
+const rules = {
+  name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
+  categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
+  priceFee: [{
+    required: true,
+    validator: (rule, value, callback) => {
+      if (!value || value <= 0) {
+        callback(new Error('请输入售价'))
+      } else {
+        callback()
+      }
+    },
+    trigger: 'blur'
+  }],
+  stock: [{ required: true, message: '请输入库存', trigger: 'blur' }]
+}
 const form = ref({
   spuId: null,
   categoryId: null,
@@ -103,6 +128,8 @@ async function loadSpu() {
 }
 
 async function handleSave() {
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
   saving.value = true
   try {
     if (isEdit.value) {
@@ -111,7 +138,7 @@ async function handleSave() {
       await saveSpu(form.value)
     }
     ElMessage.success('保存成功')
-    router.push('/product/spu/index')
+    router.push('/product/spu')
   } finally {
     saving.value = false
   }
