@@ -70,6 +70,7 @@ import GuessYouLike from '@/components/GuessYouLike.vue'
 import { listOrders } from '@/api/order'
 import { getSimpleInfo } from '@/api/user'
 import { getToken, removeToken } from '@/utils/auth'
+import { clearAllAgentChatState } from '@/utils/agentChatStorage'
 
 const router = useRouter()
 const profile = ref({})
@@ -123,6 +124,7 @@ function goOrders(tab) {
 }
 
 function handleLogout() {
+  clearAllAgentChatState()
   removeToken()
   router.push('/login')
 }

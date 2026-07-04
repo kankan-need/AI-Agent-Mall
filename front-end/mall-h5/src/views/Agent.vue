@@ -85,19 +85,24 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AgentProductCard from '@/components/agent/AgentProductCard.vue'
 import AgentComparePanel from '@/components/agent/AgentComparePanel.vue'
 import { chat } from '@/api/agent'
 import { getToken } from '@/utils/auth'
+import { loadAgentChatState, saveAgentChatState } from '@/utils/agentChatStorage'
 
 const router = useRouter()
 const chatBodyRef = ref(null)
 const inputText = ref('')
 const typing = ref(false)
-const showQuickPrompts = ref(true)
-let msgId = 0
+
+const WELCOME_MESSAGE = {
+  role: 'assistant',
+  type: 'text',
+  content: '你好，我是购物助手。你可以告诉我预算、用途或偏好，我会为你推荐商品并做参数对比。'
+}
 
 const quickPrompts = [
   '2000元以内的手机',
@@ -105,19 +110,35 @@ const quickPrompts = [
   '适合送礼的礼盒'
 ]
 
-const messages = ref([
-  {
-    id: nextId(),
-    role: 'assistant',
-    type: 'text',
-    content: '你好，我是购物助手。你可以告诉我预算、用途或偏好，我会为你推荐商品并做参数对比。'
-  }
-])
+let msgId = 0
 
 function nextId() {
   msgId += 1
   return msgId
 }
+
+function createWelcomeMessage() {
+  return { ...WELCOME_MESSAGE, id: nextId() }
+}
+
+function restoreChatState() {
+  const saved = loadAgentChatState()
+  if (saved) {
+    msgId = saved.nextMsgId || 0
+    return {
+      messages: saved.messages,
+      showQuickPrompts: saved.messages.length <= 1
+    }
+  }
+  return {
+    messages: [createWelcomeMessage()],
+    showQuickPrompts: true
+  }
+}
+
+const initialState = restoreChatState()
+const showQuickPrompts = ref(initialState.showQuickPrompts)
+const messages = ref(initialState.messages)
 
 function scrollToBottom() {
   nextTick(() => {
@@ -212,6 +233,13 @@ async function handleSend() {
     scrollToBottom()
   }
 }
+
+function persistMessages() {
+  if (!getToken()) return
+  saveAgentChatState(messages.value, msgId)
+}
+
+watch(messages, persistMessages, { deep: true })
 
 onMounted(scrollToBottom)
 </script>
