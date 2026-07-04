@@ -2,7 +2,13 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="logo">Learn Mall</div>
-      <el-menu :default-active="activeMenu" router>
+      <el-menu
+        :default-active="activeMenu"
+        router
+        background-color="#001529"
+        text-color="rgba(255, 255, 255, 0.82)"
+        active-text-color="#ffffff"
+      >
         <template v-for="route in menuRoutes" :key="route.path">
           <el-sub-menu v-if="route.children && route.children.length" :index="route.path">
             <template #title>{{ route.meta?.title || route.name }}</template>
@@ -69,16 +75,78 @@ async function handleLogout() {
   width: 220px;
   background: #001529;
   color: #fff;
+  flex-shrink: 0;
 }
 .logo {
   height: 56px;
   line-height: 56px;
   text-align: center;
+  font-size: 16px;
   font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .sidebar :deep(.el-menu) {
   border-right: none;
   background: transparent;
+  padding: 8px 0 16px;
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: rgba(255, 255, 255, 0.82);
+  --el-menu-hover-text-color: #ffffff;
+  --el-menu-active-color: #ffffff;
+  --el-menu-hover-bg-color: rgba(255, 255, 255, 0.08);
+  --el-menu-item-height: 48px;
+}
+.sidebar :deep(.el-menu-item),
+.sidebar :deep(.el-sub-menu__title) {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  margin: 2px 8px;
+  border-radius: 8px;
+  height: 44px;
+  line-height: 44px;
+}
+.sidebar :deep(.el-sub-menu__title) {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+.sidebar :deep(.el-menu-item) {
+  color: rgba(255, 255, 255, 0.82);
+}
+.sidebar :deep(.el-menu-item:hover),
+.sidebar :deep(.el-sub-menu__title:hover) {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.sidebar :deep(.el-menu-item.is-active) {
+  color: #ffffff !important;
+  font-weight: 600;
+  background: linear-gradient(90deg, rgba(64, 158, 255, 0.32), rgba(64, 158, 255, 0.08)) !important;
+}
+.sidebar :deep(.el-sub-menu .el-menu) {
+  background: rgba(0, 0, 0, 0.15) !important;
+  margin: 0 8px 4px;
+  border-radius: 8px;
+  padding: 4px 0;
+}
+.sidebar :deep(.el-sub-menu .el-menu-item) {
+  min-width: auto;
+  margin: 2px 6px;
+  padding-left: 40px !important;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.72) !important;
+  height: 40px;
+  line-height: 40px;
+}
+.sidebar :deep(.el-sub-menu .el-menu-item.is-active) {
+  color: #ffffff !important;
+  font-weight: 600;
+  background: rgba(64, 158, 255, 0.22) !important;
+}
+.sidebar :deep(.el-sub-menu__icon-arrow) {
+  color: rgba(255, 255, 255, 0.55);
 }
 .main {
   flex: 1;
