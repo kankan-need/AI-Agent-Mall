@@ -39,7 +39,7 @@ INSERT INTO coupon (coupon_id, name, amount, min_amount, valid_days, status) VAL
 
 -- ========== 管理端菜单 ==========
 INSERT INTO menu (menu_id, parent_id, biz_type, path, component, redirect, hidden, name, title, icon, seq) VALUES
-(12, 1, 2, 'marketing', 'Layout', '/marketing/coupon/index', 0, 'Marketing', '营销管理', 'present', 5),
+(12, 1, 2, 'marketing', 'Layout', '/marketing/coupon', 0, 'Marketing', '营销管理', 'present', 5),
 (13, 12, 2, 'coupon', 'marketing/coupon/index', NULL, 0, 'MarketingCoupon', '优惠券管理', 'ticket', 1);
 
 INSERT INTO role_menu (role_id, menu_id) VALUES
