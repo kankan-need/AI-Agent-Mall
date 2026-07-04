@@ -4,7 +4,7 @@ services:
     container_name: learn-mall-mysql
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: "123123"
       TZ: Asia/Shanghai
@@ -51,6 +51,9 @@ services:
       MYSQL_SERVICE_USER: root
       MYSQL_SERVICE_PASSWORD: "123123"
       NACOS_AUTH_ENABLE: "false"
+      NACOS_AUTH_TOKEN: "bGVhcm4tbWFsbC1qd3Qtc2VjcmV0LWtleS1mb3ItbmFjb3MtYXV0aC0yMDI0"
+      NACOS_AUTH_IDENTITY_KEY: "learn-mall-key"
+      NACOS_AUTH_IDENTITY_VALUE: "learn-mall-value"
       JVM_XMS: 256m
       JVM_XMX: 512m
       TZ: Asia/Shanghai

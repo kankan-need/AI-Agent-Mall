@@ -45,6 +45,8 @@
 
     <div v-if="loading" class="loading">加载中...</div>
     <div v-else-if="!list.length" class="empty">{{ searching ? '未找到相关商品' : '暂无商品' }}</div>
+
+    <AdPopup />
   </div>
 </template>
 
@@ -52,6 +54,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BannerCarousel from '@/components/BannerCarousel.vue'
+import AdPopup from '@/components/AdPopup.vue'
 import { pageSpu } from '@/api/product'
 import { getToken } from '@/utils/auth'
 import { formatPrice } from '@/utils/price'

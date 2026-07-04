@@ -6,20 +6,20 @@
     </div>
 
     <div v-if="activeTab === 'claim'" class="list">
-      <div v-for="item in COUPON_LIST" :key="item.id" class="coupon card">
+      <div v-for="item in coupons" :key="item.couponId" class="coupon card">
         <div class="left">
           <div class="amount">¥{{ formatPrice(item.amount) }}</div>
-          <div class="rule">{{ item.desc }}</div>
+          <div class="rule">满{{ formatPrice(item.minAmount) }}元可用</div>
         </div>
         <div class="right">
           <div class="name">{{ item.name }}</div>
-          <div class="expire">领取后 {{ item.expireDays }} 天内有效</div>
+          <div class="expire">领取后 {{ item.validDays }} 天内有效</div>
           <button
             class="claim-btn"
-            :disabled="isCouponClaimed(item.id)"
-            @click="handleClaim(item.id)"
+            :disabled="claimedIds.has(item.couponId)"
+            @click="handleClaim(item.couponId)"
           >
-            {{ isCouponClaimed(item.id) ? '已领取' : '立即领取' }}
+            {{ claimedIds.has(item.couponId) ? '已领取' : '立即领取' }}
           </button>
         </div>
       </div>
@@ -27,14 +27,14 @@
 
     <div v-else class="list">
       <div v-if="myCoupons.length" class="mine-list">
-        <div v-for="item in myCoupons" :key="`${item.couponId}-${item.claimDate}`" class="coupon card mine">
+        <div v-for="item in myCoupons" :key="item.userCouponId" class="coupon card mine">
           <div class="left">
             <div class="amount">¥{{ formatPrice(item.amount) }}</div>
-            <div class="rule">{{ item.desc }}</div>
+            <div class="rule">满{{ formatPrice(item.minAmount) }}元可用</div>
           </div>
           <div class="right">
-            <div class="name">{{ item.name }}</div>
-            <div class="expire">有效期至 {{ item.expireDate }}</div>
+            <div class="name">{{ item.name || '优惠券' }}</div>
+            <div class="expire">有效期至 {{ formatDate(item.expireTime) }}</div>
             <span class="status">{{ item.status === 'unused' ? '未使用' : '已使用' }}</span>
           </div>
         </div>
@@ -49,11 +49,13 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { formatPrice } from '@/utils/price'
-import { COUPON_LIST, claimCoupon, getMyCoupons, isCouponClaimed } from '@/utils/marketing'
+import { fetchCoupons, claimCouponApi, fetchMyCoupons } from '@/api/coupon'
 
 const router = useRouter()
 const activeTab = ref('claim')
+const coupons = ref([])
 const myCoupons = ref([])
+const claimedIds = ref(new Set())
 
 function ensureLogin() {
   if (!getToken()) {
@@ -63,20 +65,57 @@ function ensureLogin() {
   return true
 }
 
-function refresh() {
-  myCoupons.value = getMyCoupons()
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
-function handleClaim(couponId) {
-  if (!ensureLogin()) return
-  const result = claimCoupon(couponId)
-  alert(result.message)
-  refresh()
+async function loadCoupons() {
+  try {
+    coupons.value = await fetchCoupons()
+  } catch {
+    coupons.value = []
+  }
 }
 
-onMounted(() => {
+async function loadMyCoupons() {
+  try {
+    const list = await fetchMyCoupons()
+    // 补充优惠券名称和金额（user_coupon 表只存 coupon_id）
+    list.forEach(uc => {
+      const c = coupons.value.find(c => c.couponId === uc.couponId)
+      if (c) {
+        uc.name = c.name
+        uc.amount = c.amount
+        uc.minAmount = c.minAmount
+      }
+    })
+    myCoupons.value = list
+    claimedIds.value = new Set(list.map(item => item.couponId))
+  } catch {
+    myCoupons.value = []
+  }
+}
+
+async function handleClaim(couponId) {
   if (!ensureLogin()) return
-  refresh()
+  try {
+    await claimCouponApi(couponId)
+    alert('领取成功')
+    await loadMyCoupons()
+  } catch (e) {
+    alert(e.message || '领取失败')
+  }
+}
+
+onMounted(async () => {
+  if (!ensureLogin()) return
+  await loadCoupons()
+  await loadMyCoupons()
 })
 </script>
 

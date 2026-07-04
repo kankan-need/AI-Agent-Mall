@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.product.mapper.CouponMapper">
+
+    <select id="list" resultType="com.learn.mall.product.model.Coupon">
+        select coupon_id, name, amount, min_amount, valid_days, status, create_time, update_time
+        from coupon
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by coupon_id asc
+    </select>
+
+    <select id="getById" resultType="com.learn.mall.product.model.Coupon">
+        select coupon_id, name, amount, min_amount, valid_days, status, create_time, update_time
+        from coupon
+        where coupon_id = #{couponId}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="couponId" keyColumn="coupon_id">
+        insert into coupon (name, amount, min_amount, valid_days, status)
+        values (#{name}, #{amount}, #{minAmount}, #{validDays}, #{status})
+    </insert>
+
+    <update id="update">
+        update coupon
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="minAmount != null">min_amount = #{minAmount},</if>
+            <if test="validDays != null">valid_days = #{validDays},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where coupon_id = #{couponId}
+    </update>
+
+    <delete id="delete">
+        delete from coupon where coupon_id = #{couponId}
+    </delete>
+
+</mapper>
