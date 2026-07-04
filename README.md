@@ -12,6 +12,7 @@
 | 3 | 完成 | learn-user 注册/资料/地址、H5 个人中心 |
 | 4 | 完成 | learn-order 下单/锁库存/模拟支付/定时取消、双端订单页 |
 | 5 | 完成 | learn-agent Spring AI 购物助手、H5 Agent 对话与偏好管理 |
+| 6 | 完成 | 优惠券系统（后台管理+领券）+ 首页红包广告弹窗 |
 
 ## 目录结构
 
@@ -51,6 +52,7 @@ db/phase1-auth-rbac.sql
 db/phase2-product.sql
 db/phase3-user.sql
 db/phase4-order.sql
+db/phase5-coupon.sql
 db/phase5-agent.sql
 ```
 
@@ -194,3 +196,56 @@ OrderCancelTask        每分钟扫描超时未支付订单并关闭
 | `NACOS_HOST` | `127.0.0.1` |
 
 > Nacos 注册 IP 问题见 `learn-common-nacos`；本地开发前端走 Vite 代理，`.env.development` 中 `VITE_APP_BASE_API` 留空。
+
+## Phase 6 优惠券 + 广告弹窗
+
+### 数据库
+
+`coupon` 表（优惠券模板）和 `user_coupon` 表（用户领取记录），menu 表新增 `营销管理 > 优惠券管理`。
+
+### 后端（learn-product 模块）
+
+| 接口 | 路径 | 说明 |
+|------|------|------|
+| 公开 | `GET /learn-product/ua/coupon/list` | 查看可用优惠券 |
+| 需登录 | `POST /learn-product/a/coupon/claim?couponId=1` | 领取优惠券 |
+| 需登录 | `GET /learn-product/a/coupon/my` | 我的优惠券 |
+| 管理端 | `GET/POST/PUT/DELETE /learn-product/admin/coupon` | 优惠券 CRUD |
+
+关键类：
+
+```
+learn-product/src/main/java/com/learn/mall/product/
+├── model/Coupon.java, UserCoupon.java
+├── mapper/CouponMapper.java/xml, UserCouponMapper.java/xml
+├── service/CouponService.java, impl/CouponServiceImpl.java
+└── controller/admin/AdminCouponController.java
+             app/AppCouponController.java
+```
+
+用户身份通过 `AuthUserContext.get().getUserId()` 获取（`/a/**` 路径走 AuthFilter）。
+
+### Admin 管理端
+
+- 菜单「营销管理 > 优惠券管理」→ 表格展示所有券 → 新增/编辑/删除
+- 编辑时可修改优惠金额、最低消费、有效天数、启用状态
+- 金额输入用**元**，保存时转为**分**存储
+
+### H5 首页广告弹窗
+
+- 首次打开首页弹出红包广告窗（仿 mall4cloud 锯齿券样式）
+- 显示 3 张优惠券：红色/金色渐变左栏 + 半圆锯齿切口 + 虚线分隔
+- localStorage `learn_mall_ad_seen` 控制只弹一次
+- 数据优先从 `/ua/coupon/list` 拉取，失败时使用兜底数据
+
+### H5 领券中心
+
+- 改为走后端 API（不再用 localStorage 硬编码）
+- 领券中心：查看可用券 → 点击「立即领取」→ 写入 `user_coupon` 表
+- 我的优惠券：查看已领券，含领取时间、过期时间、使用状态
+
+### 设计要点
+
+- 金额统一用**分**存储（Long），前端 `formatPrice()` 除以 100 显示元
+- 优惠券过期时间 = 领取时间 + `valid_days`
+- Redis 缓存重启后需清理，否则菜单可能显示旧数据
