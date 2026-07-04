@@ -2,6 +2,7 @@ package com.learn.mall.api.product.feign;
 
 import com.learn.mall.api.product.dto.StockLockItemDTO;
 import com.learn.mall.api.product.vo.ShopCartItemFeignVO;
+import com.learn.mall.api.product.vo.SpuAgentBriefVO;
 import com.learn.mall.common.feign.FeignInsideAuthConfig;
 import com.learn.mall.common.response.ServerResponseEntity;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -31,4 +32,11 @@ public interface ProductFeignClient {
 
     @PostMapping(FeignInsideAuthConfig.FEIGN_INSIDE_URL_PREFIX + "/insider/stock/confirm")
     ServerResponseEntity<Void> confirmStock(@RequestBody List<StockLockItemDTO> items);
+
+    @GetMapping(FeignInsideAuthConfig.FEIGN_INSIDE_URL_PREFIX + "/insider/agent/search")
+    ServerResponseEntity<List<SpuAgentBriefVO>> searchForAgent(@RequestParam("keyword") String keyword,
+                                                                 @RequestParam(value = "limit", defaultValue = "10") Integer limit);
+
+    @GetMapping(FeignInsideAuthConfig.FEIGN_INSIDE_URL_PREFIX + "/insider/agent/briefs")
+    ServerResponseEntity<List<SpuAgentBriefVO>> listBriefsByIds(@RequestParam("spuIds") List<Long> spuIds);
 }

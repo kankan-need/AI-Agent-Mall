@@ -190,7 +190,7 @@ ON DUPLICATE KEY UPDATE username = VALUES(username);
 -- ========== admin menus ==========
 
 INSERT INTO menu (menu_id, parent_id, biz_type, path, component, redirect, hidden, name, title, icon, seq) VALUES
-(5, 1, 2, 'product', 'Layout', '/product/spu/index', 0, 'Product', '商品管理', 'goods', 3),
+(5, 1, 2, 'product', 'Layout', '/product/spu', 0, 'Product', '商品管理', 'goods', 3),
 (6, 5, 2, 'category', 'product/category/index', NULL, 0, 'ProductCategory', '分类管理', 'menu', 1),
 (7, 5, 2, 'spu', 'product/spu/index', NULL, 0, 'ProductSpu', '商品列表', 'list', 2),
 (8, 5, 2, 'edit', 'product/spu/edit', NULL, 1, 'ProductSpuEdit', '编辑商品', 'edit', 3);

@@ -88,6 +88,7 @@ const serviceEntries = [
   { path: '/favorites', label: '我的收藏', icon: '♥', bg: 'linear-gradient(135deg, #ff6034, #ee0a24)' },
   { path: '/address', label: '收货地址', icon: '址', bg: 'linear-gradient(135deg, #1989fa, #4fc3f7)' },
   { path: '/cart', label: '购物车', icon: '购', bg: 'linear-gradient(135deg, #ff976a, #ffb347)' },
+  { path: '/agent/preferences', label: '购物偏好', icon: '偏', bg: 'linear-gradient(135deg, #667eea, #764ba2)' },
   { path: '/sign-in', label: '每日签到', icon: '签', bg: 'linear-gradient(135deg, #667eea, #764ba2)' },
   { path: '/coupon-center', label: '领券中心', icon: '券', bg: 'linear-gradient(135deg, #f093fb, #f5576c)' }
 ]

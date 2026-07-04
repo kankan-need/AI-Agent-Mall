@@ -34,4 +34,9 @@ public interface SpuMapper {
     int addStock(@Param("spuId") Long spuId, @Param("count") Integer count);
 
     int addSaleNum(@Param("spuId") Long spuId, @Param("count") Integer count);
+
+    List<Spu> searchForAgent(@Param("shopId") Long shopId, @Param("keyword") String keyword,
+                               @Param("limit") int limit);
+
+    List<Spu> listByIds(@Param("spuIds") List<Long> spuIds);
 }

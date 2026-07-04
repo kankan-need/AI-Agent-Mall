@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import tools.jackson.databind.DefaultTyping;
 import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.EnumFeature;
@@ -14,6 +16,8 @@ import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
  * Jackson 工具；Redis 序列化需使用带类型信息的 {@link #getRedisObjectMapper()}。
  */
 public final class Json {
+
+    private static final ObjectMapper OBJECT_MAPPER = newBaseBuilder().build();
 
     private static final ObjectMapper REDIS_OBJECT_MAPPER = newBaseBuilder()
             .activateDefaultTyping(
@@ -44,5 +48,35 @@ public final class Json {
 
     public static ObjectMapper getRedisObjectMapper() {
         return REDIS_OBJECT_MAPPER;
+    }
+
+    public static String toJsonString(Object object) {
+        try {
+            return OBJECT_MAPPER.writeValueAsString(object);
+        } catch (JacksonException e) {
+            throw new IllegalStateException("json serialize failed", e);
+        }
+    }
+
+    public static <T> T parseObject(String json, Class<T> clazz) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(json, clazz);
+        } catch (JacksonException e) {
+            throw new IllegalStateException("json parse failed", e);
+        }
+    }
+
+    public static <T> T parseObject(String json, TypeReference<T> typeReference) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(json, typeReference);
+        } catch (JacksonException e) {
+            throw new IllegalStateException("json parse failed", e);
+        }
     }
 }

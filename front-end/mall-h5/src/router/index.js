@@ -17,6 +17,7 @@ import SignIn from '@/views/SignIn.vue'
 import CouponCenter from '@/views/CouponCenter.vue'
 import Favorites from '@/views/Favorites.vue'
 import Agent from '@/views/Agent.vue'
+import AgentPreferences from '@/views/AgentPreferences.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,6 +25,7 @@ const router = createRouter({
     { path: '/', component: Home },
     { path: '/category', component: Category },
     { path: '/agent', component: Agent },
+    { path: '/agent/preferences', component: AgentPreferences },
     { path: '/detail', component: Detail },
     { path: '/cart', component: Cart },
     { path: '/login', component: Login },

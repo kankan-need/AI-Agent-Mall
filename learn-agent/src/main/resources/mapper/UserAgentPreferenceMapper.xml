@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.mall.agent.mapper.UserAgentPreferenceMapper">
+
+    <select id="getByUserId" resultType="com.learn.mall.agent.model.UserAgentPreference">
+        select user_id, focus_type, budget_min, budget_max, tags, summary, create_time, update_time
+        from user_agent_preference
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insert">
+        insert into user_agent_preference (user_id, focus_type, budget_min, budget_max, tags, summary)
+        values (#{userId}, #{focusType}, #{budgetMin}, #{budgetMax}, #{tags}, #{summary})
+    </insert>
+
+    <update id="update">
+        update user_agent_preference
+        set focus_type = #{focusType},
+            budget_min = #{budgetMin},
+            budget_max = #{budgetMax},
+            tags = #{tags},
+            summary = #{summary}
+        where user_id = #{userId}
+    </update>
+</mapper>

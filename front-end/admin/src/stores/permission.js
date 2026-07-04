@@ -32,6 +32,11 @@ export const usePermissionStore = defineStore('permission', {
         ...item,
         component: loadView(item.component, item.parentId)
       }))
+      // 修正商品管理 redirect：数据库里是 /product/spu/index，实际路由是 /product/spu
+      const productMenu = asyncRoutes.find(m => m.redirect === '/product/spu/index')
+      if (productMenu) {
+        productMenu.redirect = '/product/spu'
+      }
       const treeRoutes = treeDataTranslate(asyncRoutes)
       this.addRoutes = treeRoutes
       this.routes = constantRoutes.concat(treeRoutes)

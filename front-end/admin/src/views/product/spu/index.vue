@@ -3,7 +3,10 @@
     <template #header>
       <div class="header">
         <span>商品列表</span>
-        <el-button type="primary" @click="goEdit()">新增商品</el-button>
+        <div>
+          <el-button @click="router.push('/product/category')">分类管理</el-button>
+          <el-button type="primary" @click="goEdit()">新增商品</el-button>
+        </div>
       </div>
     </template>
 
@@ -87,7 +90,7 @@ async function loadData() {
 }
 
 function goEdit(spuId) {
-  router.push({ path: '/product/spu/edit', query: spuId ? { spuId } : {} })
+  router.push({ path: '/product/edit', query: spuId ? { spuId } : {} })
 }
 
 async function toggleStatus(row) {

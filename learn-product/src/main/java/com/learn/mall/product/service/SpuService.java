@@ -6,6 +6,8 @@ import com.learn.mall.product.dto.SpuDTO;
 import com.learn.mall.product.dto.SpuPageSearchDTO;
 import com.learn.mall.product.vo.SpuVO;
 
+import java.util.List;
+
 public interface SpuService {
 
     PageVO<SpuVO> page(PageDTO pageDTO, SpuPageSearchDTO searchDTO);
@@ -21,4 +23,8 @@ public interface SpuService {
     void updateStatus(Long spuId, Integer status);
 
     void deleteById(Long spuId);
+
+    List<SpuVO> searchForAgent(String keyword, int limit);
+
+    List<SpuVO> listBriefByIds(List<Long> spuIds);
 }

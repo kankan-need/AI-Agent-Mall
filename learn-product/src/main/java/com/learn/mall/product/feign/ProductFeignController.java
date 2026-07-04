@@ -3,11 +3,14 @@ package com.learn.mall.product.feign;
 import com.learn.mall.api.product.dto.StockLockItemDTO;
 import com.learn.mall.api.product.feign.ProductFeignClient;
 import com.learn.mall.api.product.vo.ShopCartItemFeignVO;
+import com.learn.mall.api.product.vo.SpuAgentBriefVO;
 import com.learn.mall.common.response.ServerResponseEntity;
 import com.learn.mall.common.util.BeanUtil;
 import com.learn.mall.product.service.ShopCartService;
+import com.learn.mall.product.service.SpuService;
 import com.learn.mall.product.service.StockService;
 import com.learn.mall.product.vo.ShopCartItemVO;
+import com.learn.mall.product.vo.SpuVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +24,8 @@ public class ProductFeignController implements ProductFeignClient {
     private ShopCartService shopCartService;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private SpuService spuService;
 
     @Override
     public ServerResponseEntity<List<ShopCartItemFeignVO>> listCheckedCartItems(Long userId) {
@@ -54,5 +59,25 @@ public class ProductFeignController implements ProductFeignClient {
     public ServerResponseEntity<Void> confirmStock(List<StockLockItemDTO> items) {
         stockService.confirmStock(items);
         return ServerResponseEntity.success();
+    }
+
+    @Override
+    public ServerResponseEntity<List<SpuAgentBriefVO>> searchForAgent(String keyword, Integer limit) {
+        List<SpuVO> list = spuService.searchForAgent(keyword, limit == null ? 10 : limit);
+        return ServerResponseEntity.success(toBriefList(list));
+    }
+
+    @Override
+    public ServerResponseEntity<List<SpuAgentBriefVO>> listBriefsByIds(List<Long> spuIds) {
+        List<SpuVO> list = spuService.listBriefByIds(spuIds);
+        return ServerResponseEntity.success(toBriefList(list));
+    }
+
+    private List<SpuAgentBriefVO> toBriefList(List<SpuVO> list) {
+        List<SpuAgentBriefVO> result = new ArrayList<>(list.size());
+        for (SpuVO spuVO : list) {
+            result.add(BeanUtil.map(spuVO, SpuAgentBriefVO.class));
+        }
+        return result;
     }
 }

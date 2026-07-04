@@ -8,7 +8,7 @@
           <p>描述需求，帮你选品、对比、推荐</p>
         </div>
       </div>
-      <span class="demo-tag">演示模式</span>
+      <button class="pref-btn" @click="goPreferences">偏好</button>
     </header>
 
     <div ref="chatBodyRef" class="chat-body">
@@ -30,11 +30,11 @@
 
             <div v-if="msg.products?.length" class="product-scroll">
               <AgentProductCard
-                v-for="(product, index) in msg.products"
+                v-for="product in msg.products"
                 :key="product.spuId"
                 :product="product"
-                :tag="productTags[index]"
-                :tag-type="productTagTypes[index]"
+                :tag="getProductTag(product.spuId, msg.compare)"
+                :tag-type="getProductTagType(product.spuId, msg.compare)"
               />
             </div>
 
@@ -86,16 +86,17 @@
 
 <script setup>
 import { nextTick, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AgentProductCard from '@/components/agent/AgentProductCard.vue'
 import AgentComparePanel from '@/components/agent/AgentComparePanel.vue'
-import { pageSpu } from '@/api/product'
-import { formatPrice } from '@/utils/price'
+import { chat } from '@/api/agent'
+import { getToken } from '@/utils/auth'
 
+const router = useRouter()
 const chatBodyRef = ref(null)
 const inputText = ref('')
 const typing = ref(false)
 const showQuickPrompts = ref(true)
-const sampleProducts = ref([])
 let msgId = 0
 
 const quickPrompts = [
@@ -103,9 +104,6 @@ const quickPrompts = [
   '轻便运动鞋推荐',
   '适合送礼的礼盒'
 ]
-
-const productTags = ['性价比', '推荐', '热销']
-const productTagTypes = ['value', 'recommend', 'default']
 
 const messages = ref([
   {
@@ -128,64 +126,48 @@ function scrollToBottom() {
   })
 }
 
-function buildDemoCompare(products) {
-  const items = products.slice(0, 3).map((product, index) => ({
-    spuId: product.spuId,
-    name: product.name,
-    recommended: index === 1,
-    values: {
-      price: `¥${formatPrice(product.priceFee)}`,
-      point: product.sellingPoint || '品质稳定',
-      sales: `${product.saleNum || 0}件`,
-      stock: product.stock > 50 ? '充足' : '紧张'
-    }
-  }))
-
-  return {
-    specs: [
-      { key: 'price', label: '价格' },
-      { key: 'point', label: '卖点' },
-      { key: 'sales', label: '销量' },
-      { key: 'stock', label: '库存' }
-    ],
-    items,
-    highlights: items.reduce((acc, item, index) => {
-      acc[item.spuId] = index === 1 ? ['price', 'sales'] : []
-      return acc
-    }, {}),
-    recommendation: items[1]
-      ? `综合预算与口碑，更推荐「${items[1].name}」，性价比突出且销量较好。点击上方卡片可查看详情。`
-      : '以上商品供参考，点击卡片可查看详情。'
+function ensureLogin() {
+  if (!getToken()) {
+    router.push('/login')
+    return false
   }
+  return true
 }
 
-function buildDemoResponse(userText) {
-  const products = sampleProducts.value.slice(0, 3)
-  if (!products.length) {
+function goPreferences() {
+  if (!ensureLogin()) return
+  router.push('/agent/preferences')
+}
+
+function getProductTag(spuId, compare) {
+  const item = compare?.items?.find(entry => entry.spuId === spuId)
+  if (item?.recommended) return '推荐'
+  return ''
+}
+
+function getProductTagType(spuId, compare) {
+  const item = compare?.items?.find(entry => entry.spuId === spuId)
+  if (item?.recommended) return 'recommend'
+  return 'default'
+}
+
+function mapAssistantMessage(data) {
+  const hasProducts = data.products && data.products.length > 0
+  if (!hasProducts) {
     return {
       id: nextId(),
       role: 'assistant',
       type: 'text',
-      content: '演示数据加载中，请稍后再试。'
+      content: data.reply || '暂时没有找到合适商品，请补充更多需求。'
     }
   }
-
   return {
     id: nextId(),
     role: 'assistant',
     type: 'rich',
-    content: `根据「${userText}」，为你筛选了以下商品，并附上参数对比：`,
-    products,
-    compare: buildDemoCompare(products)
-  }
-}
-
-async function loadSampleProducts() {
-  try {
-    const data = await pageSpu({ pageNum: 1, pageSize: 6 })
-    sampleProducts.value = data.list || []
-  } catch {
-    sampleProducts.value = []
+    content: data.reply,
+    products: data.products,
+    compare: data.compare
   }
 }
 
@@ -197,6 +179,7 @@ function sendPrompt(text) {
 async function handleSend() {
   const text = inputText.value.trim()
   if (!text || typing.value) return
+  if (!ensureLogin()) return
 
   showQuickPrompts.value = false
   messages.value.push({
@@ -211,18 +194,26 @@ async function handleSend() {
   typing.value = true
   scrollToBottom()
 
-  // 演示：模拟 Agent 回复，后续替换为真实接口
-  await new Promise(resolve => setTimeout(resolve, 1200))
-
-  messages.value.push(buildDemoResponse(text))
-  typing.value = false
-  scrollToBottom()
+  try {
+    const data = await chat({ message: text })
+    messages.value.push(mapAssistantMessage(data))
+  } catch (err) {
+    const isTimeout = err?.message?.includes('timeout')
+    messages.value.push({
+      id: nextId(),
+      role: 'assistant',
+      type: 'text',
+      content: isTimeout
+        ? '助手思考时间较长，请稍等后重试。若多次超时，请检查 learn-agent 服务与 DeepSeek 网络连接。'
+        : (err?.message || '助手暂时不可用，请稍后重试。')
+    })
+  } finally {
+    typing.value = false
+    scrollToBottom()
+  }
 }
 
-onMounted(() => {
-  loadSampleProducts()
-  scrollToBottom()
-})
+onMounted(scrollToBottom)
 </script>
 
 <style scoped>
@@ -276,12 +267,13 @@ onMounted(() => {
   color: #969799;
 }
 
-.demo-tag {
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: rgba(102, 126, 234, 0.1);
+.pref-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: rgba(102, 126, 234, 0.12);
   color: #667eea;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 

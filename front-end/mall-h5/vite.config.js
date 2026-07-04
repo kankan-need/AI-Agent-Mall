@@ -32,6 +32,10 @@ export default defineConfig({
       '/learn-order': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true
+      },
+      '/learn-agent': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
       }
     }
   }

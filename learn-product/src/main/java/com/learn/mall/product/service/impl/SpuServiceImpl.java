@@ -144,6 +144,22 @@ public class SpuServiceImpl implements SpuService {
         spuMapper.updateStatus(spuId, ProductConstant.STATUS_DELETE);
     }
 
+    @Override
+    public List<SpuVO> searchForAgent(String keyword, int limit) {
+        int safeLimit = Math.min(Math.max(limit, 1), 20);
+        List<Spu> spuList = spuMapper.searchForAgent(ProductConstant.DEFAULT_SHOP_ID, keyword, safeLimit);
+        return toSpuVoList(spuList);
+    }
+
+    @Override
+    public List<SpuVO> listBriefByIds(List<Long> spuIds) {
+        if (spuIds == null || spuIds.isEmpty()) {
+            return List.of();
+        }
+        List<Spu> spuList = spuMapper.listByIds(spuIds);
+        return toSpuVoList(spuList);
+    }
+
     private PageVO<SpuVO> buildPage(List<Spu> spuList, long total, int size) {
         PageVO<SpuVO> pageVO = new PageVO<>();
         List<SpuVO> list = new ArrayList<>(spuList.size());
@@ -160,6 +176,14 @@ public class SpuServiceImpl implements SpuService {
         List<SkuVO> list = new ArrayList<>(skus.size());
         for (Sku sku : skus) {
             list.add(BeanUtil.map(sku, SkuVO.class));
+        }
+        return list;
+    }
+
+    private List<SpuVO> toSpuVoList(List<Spu> spuList) {
+        List<SpuVO> list = new ArrayList<>(spuList.size());
+        for (Spu spu : spuList) {
+            list.add(BeanUtil.map(spu, SpuVO.class));
         }
         return list;
     }

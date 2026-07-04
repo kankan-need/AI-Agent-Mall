@@ -11,6 +11,7 @@
 | 2 | 完成 | learn-product 商品/分类/购物车、admin 商品管理、H5 浏览 |
 | 3 | 完成 | learn-user 注册/资料/地址、H5 个人中心 |
 | 4 | 完成 | learn-order 下单/锁库存/模拟支付/定时取消、双端订单页 |
+| 5 | 完成 | learn-agent Spring AI 购物助手、H5 Agent 对话与偏好管理 |
 
 ## 目录结构
 
@@ -24,6 +25,7 @@ mall4cloud-learn/
 ├── learn-product/         # :9114
 ├── learn-user/            # :9115
 ├── learn-order/           # :9116
+├── learn-agent/           # :9117
 ├── learn-demo/            # :9100
 ├── front-end/admin/
 ├── front-end/mall-h5/
@@ -49,9 +51,21 @@ db/phase1-auth-rbac.sql
 db/phase2-product.sql
 db/phase3-user.sql
 db/phase4-order.sql
+db/phase5-agent.sql
 ```
 
 > 已有数据库只需补充商品数据时，可额外执行 `db/product-more-data.sql`（增量插入，不会清空表）。
+
+### Agent 配置（Phase 5）
+
+启动 `learn-agent` 前需配置 DeepSeek API Key：
+
+```powershell
+$env:DEEPSEEK_API_KEY="你的DeepSeek密钥"
+mvn -pl learn-agent spring-boot:run
+```
+
+H5 底部 **Agent** 入口进入对话；**我的 → 购物偏好** 可查看/修改偏好。
 
 ### 商品数据概览
 
@@ -79,6 +93,7 @@ mvn -pl learn-rbac spring-boot:run
 mvn -pl learn-product spring-boot:run
 mvn -pl learn-user spring-boot:run
 mvn -pl learn-order spring-boot:run
+mvn -pl learn-agent spring-boot:run
 mvn -pl learn-gateway spring-boot:run
 ```
 

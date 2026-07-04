@@ -112,4 +112,24 @@
     <update id="addSaleNum">
         update spu set sale_num = sale_num + #{count} where spu_id = #{spuId}
     </update>
+
+    <select id="searchForAgent" resultType="com.learn.mall.product.model.Spu">
+        select spu_id, category_id, shop_id, name, selling_point, main_img_url, img_urls,
+               price_fee, market_price_fee, status, stock, sale_num, seq
+        from spu
+        where shop_id = #{shopId} and status = 1
+          and (name like concat('%', #{keyword}, '%') or selling_point like concat('%', #{keyword}, '%'))
+        order by sale_num desc, spu_id desc
+        limit #{limit}
+    </select>
+
+    <select id="listByIds" resultType="com.learn.mall.product.model.Spu">
+        select spu_id, category_id, shop_id, name, selling_point, main_img_url, img_urls,
+               price_fee, market_price_fee, status, stock, sale_num, seq
+        from spu
+        where status = 1 and spu_id in
+        <foreach collection="spuIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

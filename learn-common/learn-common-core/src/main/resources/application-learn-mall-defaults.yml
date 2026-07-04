@@ -21,3 +21,5 @@ spring:
             url: http://127.0.0.1:9116
           learn-product:
             url: http://127.0.0.1:9114
+          learn-agent:
+            url: http://127.0.0.1:9117
